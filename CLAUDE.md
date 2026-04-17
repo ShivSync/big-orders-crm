@@ -100,6 +100,8 @@ SQL files in `supabase/migrations/`. Applied migrations:
 | 20260417800000_sprint5_security_fixes.sql | 5 | APPLIED |
 | 20260417900000_sprint6_campaigns_events.sql | 6 | APPLIED |
 | 20260417950000_sprint6_security_fixes.sql | 6 | APPLIED |
+| 20260418000000_sprint7_store_seeds.sql | 7 | APPLIED (244 KFC stores + 665 competitor locations) |
+| 20260418100000_sprint7_settings_discovery.sql | 7 | APPLIED (system_settings, discovery+settings permissions) |
 
 ---
 
@@ -114,7 +116,8 @@ SQL files in `supabase/migrations/`. Applied migrations:
 | 4 | Sales Pipeline & Opportunities | DONE |
 | 5 | Big Orders & Menu | DONE — commit `80140c4` |
 | 6 | Campaigns & Events | DONE — commit `29fb56b` |
-| 7-12 | Discovery → Settings/Polish | QUEUED (OVE) |
+| 7 | Discovery Engine | DONE — commit `c996e73` |
+| 8-12 | Landing/Chat → Settings/Polish | QUEUED (OVE) |
 
 ## Deferred Items
 - PII masking (mask_phone/mask_email on customer/org pages) → Sprint 11

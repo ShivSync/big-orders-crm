@@ -1,4 +1,3 @@
-sprint-07-discovery.md
 sprint-08-landing-chat.md
 sprint-09-channels.md
 sprint-10-oms-integration.md

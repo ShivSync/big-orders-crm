@@ -12,37 +12,34 @@ CREATE TABLE IF NOT EXISTS system_settings (
 -- RLS: only admin/root can read/write settings
 ALTER TABLE system_settings ENABLE ROW LEVEL SECURITY;
 
+-- Avoid user_has_permission() in RLS — it queries 'users' table which has
+-- self-referencing RLS, causing infinite recursion. Use direct JOINs instead.
 CREATE POLICY "settings_select" ON system_settings
   FOR SELECT USING (
     EXISTS (
-      SELECT 1 FROM users u
-      WHERE u.id = auth.uid() AND u.is_root = true
-    )
-    OR
-    EXISTS (
-      SELECT 1 FROM public.user_has_permission(auth.uid(), 'settings.view')
-      AS has_perm WHERE has_perm = true
+      SELECT 1 FROM user_roles ur
+      JOIN role_permissions rp ON rp.role_id = ur.role_id
+      JOIN permissions p ON p.id = rp.permission_id
+      WHERE ur.user_id = auth.uid() AND p.slug = 'settings.view'
     )
   );
 
 CREATE POLICY "settings_insert" ON system_settings
   FOR INSERT WITH CHECK (
     EXISTS (
-      SELECT 1 FROM users u
-      WHERE u.id = auth.uid() AND u.is_root = true
+      SELECT 1 FROM user_roles ur
+      JOIN roles r ON r.id = ur.role_id
+      WHERE ur.user_id = auth.uid() AND r.slug = 'admin'
     )
   );
 
 CREATE POLICY "settings_update" ON system_settings
   FOR UPDATE USING (
     EXISTS (
-      SELECT 1 FROM users u
-      WHERE u.id = auth.uid() AND u.is_root = true
-    )
-    OR
-    EXISTS (
-      SELECT 1 FROM public.user_has_permission(auth.uid(), 'settings.edit')
-      AS has_perm WHERE has_perm = true
+      SELECT 1 FROM user_roles ur
+      JOIN role_permissions rp ON rp.role_id = ur.role_id
+      JOIN permissions p ON p.id = rp.permission_id
+      WHERE ur.user_id = auth.uid() AND p.slug = 'settings.edit'
     )
   );
 

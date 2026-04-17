@@ -14,7 +14,7 @@ test.describe("Sprint 7: Discovery Engine", () => {
     test.skip(response?.status() === 404, "Discovery page not deployed yet");
     await page.waitForLoadState("domcontentloaded");
 
-    await expect(page.locator("text=Cửa hàng")).toBeVisible({ timeout: 10000 });
+    await expect(page.locator("div.text-sm:has-text('Cửa hàng')").first()).toBeVisible({ timeout: 10000 });
     await expect(page.locator("text=Tổng đã khám phá")).toBeVisible({ timeout: 5000 });
   });
 
