@@ -97,7 +97,7 @@ Each sprint includes: DB migration, UI pages, API routes, i18n keys, tests, and 
 
 ## Sprint 5: Big Orders & Menu Management
 
-**Status:** DONE | **Commit:** (pending)
+**Status:** DONE | **Commit:** `dabbeb9` + `80140c4`
 
 **Built:**
 - 5 tables: `menu_categories`, `menu_items`, `orders`, `order_items`, `order_status_history`

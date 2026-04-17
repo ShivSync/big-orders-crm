@@ -95,8 +95,9 @@ SQL files in `supabase/migrations/`. Applied migrations:
 | 20260417200000_security_fixes.sql | 2.5 | APPLIED (partial — ownership errors on Sprint 1 tables, policies OK) |
 | 20260417300000_sprint3_customers_orgs.sql | 3 | APPLIED |
 | 20260417400000_sprint3_security_fixes.sql | 3 | APPLIED |
-| 20260417700000_sprint5_orders_menu.sql | 5 | PENDING |
-| 20260417800000_sprint5_security_fixes.sql | 5 | PENDING |
+| 20260417700000_sprint5_orders_menu.sql | 5 | APPLIED (menu tables + seeds; orders FK fixed by patch) |
+| 20260417750000_sprint5_orders_fix_storeid.sql | 5 | APPLIED (orders/order_items/order_status_history with text store_id) |
+| 20260417800000_sprint5_security_fixes.sql | 5 | APPLIED |
 
 ---
 
@@ -109,7 +110,7 @@ SQL files in `supabase/migrations/`. Applied migrations:
 | 2.5 | Security Hardening (Codex review) | DONE |
 | 3 | Customers & Organizations | DONE |
 | 4 | Sales Pipeline & Opportunities | DONE |
-| 5 | Big Orders & Menu | DONE |
+| 5 | Big Orders & Menu | DONE — commit `80140c4` |
 | 6-12 | Campaigns → Settings/Polish | QUEUED (OVE) |
 
 ## Deferred Items
