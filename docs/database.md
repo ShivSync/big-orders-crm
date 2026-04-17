@@ -4,7 +4,7 @@
 
 PostgreSQL via Supabase self-hosted on EC2. All tables have RLS enabled, soft delete via `deleted_at`, and `updated_at` triggers.
 
-## Tables (24 total as of Sprint 5)
+## Tables (32 total as of Sprint 9)
 
 ### Sprint 1: Foundation (13 tables)
 
@@ -64,6 +64,91 @@ PostgreSQL via Supabase self-hosted on EC2. All tables have RLS enabled, soft de
 **Event types:** birthday, corporate, school_event, meeting, custom
 **Sources:** crm, landing_page, phone, zalo, facebook, oms_migrated
 **Business rules:** discount >15% or total >50M VND → requires approval
+
+### Sprint 6: Campaigns & Events (3 tables)
+
+| Table | Purpose |
+|-------|---------|
+| `campaigns` | SMS/email campaign definitions with segment builder |
+| `campaign_recipients` | Per-recipient delivery tracking (pending → sent → delivered/failed/bounced) |
+| `recurring_events` | Customer recurring events (birthdays, anniversaries, etc.) |
+
+**Campaign statuses:** draft → scheduled → sending → sent / cancelled
+**Campaign types:** sms, email
+
+### Sprint 7: Discovery Engine (2 tables + seeds)
+
+| Table | Purpose |
+|-------|---------|
+| `system_settings` | Key-value system configuration store |
+
+**Seeds:** 244 KFC stores, 665 competitor locations
+
+### Sprint 8: Landing Page & Chat (4 tables)
+
+| Table | Purpose |
+|-------|---------|
+| `landing_page_content` | CMS-driven landing page sections |
+| `chat_sessions` | Live chat session tracking |
+| `chat_messages` | Chat message history (WebSocket-backed) |
+| `bot_faq` | FAQ entries for chat bot auto-responses |
+
+### Sprint 9: Channel Integrations (1 table)
+
+| Table | Purpose |
+|-------|---------|
+| `channel_messages` | Unified multi-channel message store (Zalo, Facebook, SMS, ZNS, Antbuddy) |
+
+#### `channel_messages` — Schema
+
+| Column | Type | Constraints | Description |
+|--------|------|-------------|-------------|
+| `id` | `uuid` | PK, default `gen_random_uuid()` | Message ID |
+| `channel` | `text` | NOT NULL, CHECK (`zalo`, `facebook`, `sms`, `zns`, `antbuddy`) | Source channel |
+| `direction` | `text` | NOT NULL, CHECK (`inbound`, `outbound`) | Message direction |
+| `lead_id` | `uuid` | FK → `leads(id)`, nullable | Linked lead |
+| `customer_id` | `uuid` | FK → `individual_customers(id)`, nullable | Linked customer |
+| `sender_id` | `text` | nullable | External sender ID (Zalo UID, FB PSID, phone) |
+| `recipient_id` | `text` | nullable | External recipient ID |
+| `message_body` | `text` | nullable | Message text content |
+| `template_id` | `text` | nullable | ZNS template ID (outbound ZNS only) |
+| `template_data` | `jsonb` | nullable | ZNS template variables |
+| `external_id` | `text` | nullable | Provider message ID (Vihat, Zalo, FB) |
+| `campaign_id` | `uuid` | FK → `campaigns(id)`, nullable | Linked campaign (for campaign sends) |
+| `status` | `text` | NOT NULL, default `'pending'`, CHECK (`pending`, `sent`, `delivered`, `failed`, `read`) | Delivery status |
+| `is_read` | `boolean` | NOT NULL, default `false` | Read flag for inbox UI |
+| `metadata` | `jsonb` | nullable | Channel-specific payload (attachments, call data, etc.) |
+| `created_at` | `timestamptz` | NOT NULL, default `now()` | Creation timestamp |
+| `updated_at` | `timestamptz` | NOT NULL, default `now()` | Last update (trigger) |
+| `deleted_at` | `timestamptz` | nullable | Soft delete |
+| `created_by` | `uuid` | FK → `users(id)`, nullable | CRM user who sent (outbound only) |
+
+#### Indexes
+
+| Index | Columns | Purpose |
+|-------|---------|---------|
+| `idx_channel_messages_channel` | `channel` | Filter by channel |
+| `idx_channel_messages_lead_id` | `lead_id` | Messages tab on lead 360 |
+| `idx_channel_messages_customer_id` | `customer_id` | Messages tab on customer 360 |
+| `idx_channel_messages_campaign_id` | `campaign_id` | Campaign delivery tracking |
+| `idx_channel_messages_created_at` | `created_at DESC` | Inbox chronological sort |
+| `idx_channel_messages_status` | `status` | Filter by delivery status |
+
+#### RLS Policies
+
+| Policy | Operation | Rule |
+|--------|-----------|------|
+| `channel_messages_select` | SELECT | `deleted_at IS NULL` AND (`is_root` OR `user_has_permission(uid, 'channels.view')`) |
+| `channel_messages_insert` | INSERT | `is_root` OR `user_has_permission(uid, 'channels.send')` |
+| `channel_messages_update` | UPDATE | `deleted_at IS NULL` AND (`is_root` OR `user_has_permission(uid, 'channels.send')`) |
+| `channel_messages_delete` | UPDATE (soft) | `deleted_at IS NULL` AND (`is_root` OR `user_has_permission(uid, 'channels.send')`) |
+
+#### Permissions
+
+| Slug | Description |
+|------|-------------|
+| `channels.view` | View channel messages in inbox and 360 views |
+| `channels.send` | Send outbound messages (SMS, ZNS) and manage messages |
 
 ## RLS Pattern
 

@@ -196,6 +196,139 @@ Fetch all active menu categories and items.
 
 ---
 
+### POST /api/webhooks/zalo
+Receive inbound messages from Zalo OA.
+
+**Authentication:** None (public webhook). HMAC signature verification via `X-ZaloOA-Signature` header.
+
+**Body:** Zalo OA webhook payload (message event).
+
+**Behavior:**
+- Verifies HMAC-SHA256 signature against app secret
+- Extracts sender ID, message text, attachments
+- Matches sender to existing lead/customer by Zalo UID
+- Creates `channel_messages` record with `channel = 'zalo'`
+
+**Response:** `200 OK` (empty body — Zalo requires 200 within 5s)
+
+---
+
+### GET /api/webhooks/facebook
+Facebook webhook verification (subscribe).
+
+**Authentication:** None (public endpoint).
+
+**Query params:** `hub.mode`, `hub.verify_token`, `hub.challenge`
+
+**Response:** Returns `hub.challenge` if verify token matches, otherwise `403`.
+
+---
+
+### POST /api/webhooks/facebook
+Receive inbound messages from Facebook Messenger.
+
+**Authentication:** None (public webhook). Verifies `X-Hub-Signature-256` header.
+
+**Body:** Facebook Messenger webhook payload.
+
+**Behavior:**
+- Verifies SHA-256 signature against app secret
+- Extracts sender PSID, message text, attachments
+- Matches sender to existing lead/customer by Facebook PSID
+- Creates `channel_messages` record with `channel = 'facebook'`
+
+**Response:** `200 OK` (body: `"EVENT_RECEIVED"`)
+
+---
+
+### POST /api/webhooks/antbuddy
+Receive caller ID events from Antbuddy call center integration.
+
+**Authentication:** None (public webhook). IP allowlist or shared secret validation.
+
+**Body:**
+```json
+{
+  "caller_number": "+84912345678",
+  "call_direction": "inbound",
+  "agent_id": "string",
+  "call_id": "string"
+}
+```
+
+**Behavior:**
+- Normalizes phone number format
+- Matches caller to existing lead/customer by phone
+- Creates `channel_messages` record with `channel = 'antbuddy'`
+- Returns matched entity info for agent screen-pop
+
+**Response:** `{ "matched": true, "entity_type": "customer", "entity_id": "uuid", "name": "..." }`
+
+---
+
+### POST /api/channels/send-zns
+Send a Zalo Notification Service (ZNS) message via Vihat.
+
+**Permissions:** `channels.send`
+
+**Validation:**
+- Recipient must have interacted via Zalo within the last 48 hours (reply window)
+- Template ID required (pre-approved ZNS templates only)
+
+**Body:**
+```json
+{
+  "recipient_id": "uuid",
+  "template_id": "string",
+  "template_data": { "customer_name": "Nguyen Van A", "order_id": "BO-2026-00001" },
+  "phone": "+84912345678"
+}
+```
+
+**Response:** `{ "success": true, "message_id": "uuid", "vihat_id": "string" }`
+
+---
+
+### POST /api/channels/send-sms
+Send an SMS via Vihat using KFC brandname.
+
+**Permissions:** `channels.send`
+
+**Validation:**
+- Phone number required, must be valid Vietnamese mobile number
+- Message body required, max 160 characters per segment
+
+**Body:**
+```json
+{
+  "phone": "+84912345678",
+  "message": "KFC: Don hang BO-2026-00001 da duoc xac nhan. Cam on quy khach!",
+  "recipient_id": "uuid (optional)",
+  "campaign_id": "uuid (optional)"
+}
+```
+
+**Response:** `{ "success": true, "message_id": "uuid", "vihat_id": "string" }`
+
+---
+
+### PATCH /api/channels/messages
+Mark a channel message as read.
+
+**Permissions:** `channels.view`
+
+**Body:**
+```json
+{
+  "message_id": "uuid",
+  "read": true
+}
+```
+
+**Response:** `{ "success": true }`
+
+---
+
 ## Error Responses
 
 All errors follow this format:

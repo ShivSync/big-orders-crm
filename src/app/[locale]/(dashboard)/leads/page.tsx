@@ -137,6 +137,7 @@ export default function LeadsPage() {
     const map: Record<LeadSource, string> = {
       manual: "sourceManual", event: "sourceEvent", campaign: "sourceCampaign", platform: "sourcePlatform",
       web_app: "sourceWebApp", company_school: "sourceCompanySchool", google_maps: "sourceGoogleMaps", oms_sync: "sourceOmsSync",
+      embed_widget: "sourceEmbedWidget", chat_bot: "sourceChatBot", zalo: "sourceZalo", facebook: "sourceFacebook", phone_call: "sourcePhoneCall",
     };
     return t(map[ls]);
   };

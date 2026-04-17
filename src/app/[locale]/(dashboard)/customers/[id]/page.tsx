@@ -20,6 +20,7 @@ import {
   DollarSign, ShoppingCart, Calendar,
   PhoneCall, Video, StickyNote, Send, Settings2,
 } from "lucide-react";
+import { ChannelMessagesPanel } from "@/components/channels/channel-messages-panel";
 import type {
   IndividualCustomer, ContactType, Store, User, Activity, ActivityType,
   Organization, CustomerOrgLink, Gender, RecurringEvent, RecurringEventType,
@@ -55,6 +56,8 @@ export default function CustomerDetailPage() {
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const [eventDialogOpen, setEventDialogOpen] = useState(false);
   const [editData, setEditData] = useState<Partial<IndividualCustomer>>({});
+  const [rightTab, setRightTab] = useState<"activities" | "messages">("activities");
+  const tChannels = useTranslations("channels");
 
   const loadData = useCallback(async () => {
     const [custRes, storesRes, activitiesRes, linksRes, orgsRes, eventsRes] = await Promise.all([
@@ -565,8 +568,30 @@ export default function CustomerDetailPage() {
           </Card>
         </div>
 
-        {/* Activity Timeline */}
+        {/* Activity Timeline + Messages */}
         <div className="space-y-4">
+          <div className="flex gap-1 border-b">
+            <button
+              onClick={() => setRightTab("activities")}
+              className={`px-3 py-2 text-sm font-medium border-b-2 transition-colors ${rightTab === "activities" ? "border-red-600 text-red-600" : "border-transparent text-gray-500 hover:text-gray-700"}`}
+            >
+              {tLeads("activityTimeline")}
+            </button>
+            <button
+              onClick={() => setRightTab("messages")}
+              className={`px-3 py-2 text-sm font-medium border-b-2 transition-colors ${rightTab === "messages" ? "border-red-600 text-red-600" : "border-transparent text-gray-500 hover:text-gray-700"}`}
+            >
+              {tChannels("messages")}
+            </button>
+          </div>
+
+          {rightTab === "messages" ? (
+            <Card>
+              <CardContent className="pt-4">
+                <ChannelMessagesPanel entityType="customer" entityId={id} />
+              </CardContent>
+            </Card>
+          ) : (
           <Card>
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
@@ -639,6 +664,7 @@ export default function CustomerDetailPage() {
               )}
             </CardContent>
           </Card>
+          )}
         </div>
       </div>
     </div>

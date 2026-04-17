@@ -167,13 +167,30 @@ Each sprint includes: DB migration, UI pages, API routes, i18n keys, tests, and 
 
 ---
 
+## Sprint 9: Channel Integrations
+
+**Status:** IN PROGRESS | **Date:** 2026-04-18 | **Commit:** pending
+
+**Built:**
+- 1 table: `channel_messages` (unified multi-channel message store)
+- Zalo OA webhook (`POST /api/webhooks/zalo`) with HMAC signature verification
+- Facebook Messenger webhook (`GET/POST /api/webhooks/facebook`) with verify token + message handling
+- Antbuddy caller ID webhook (`POST /api/webhooks/antbuddy`) with phone matching to leads/customers
+- Vihat ZNS send (`POST /api/channels/send-zns`) with 48h reply window enforcement
+- Vihat SMS brandname send (`POST /api/channels/send-sms`) via KFC brandname
+- Unified channel inbox UI — all channels in one view with filters
+- Messages tab on lead and customer 360 detail views
+- Help page with full user guide and contextual tooltips
+- Campaign SMS wiring to Vihat (campaigns.send triggers Vihat SMS delivery)
+- Mark message as read (`PATCH /api/channels/messages`)
+- Channel permissions seeded: channels.view, channels.send
+
+---
+
 ## Upcoming Sprints
 
 | Sprint | Name | Key Deliverables |
 |--------|------|-----------------|
-| 7 | Discovery & Landing | Geo-based lead discovery, public landing page |
-| 8 | Landing Page & Chat | CMS-driven content, live chat (WebSocket) |
-| 9 | Channel Integration | Zalo OA, Facebook, Vihat SMS/ZNS |
 | 10 | OMS Integration | Store sync, historical data seed |
 | 11 | Reports & Dashboards | Analytics, KPIs, export |
 | 12 | Settings & Polish | Admin settings, UX polish, final QA |

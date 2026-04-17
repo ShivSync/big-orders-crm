@@ -114,7 +114,26 @@ export interface UserWithRoles extends User {
 
 // Lead Management Types
 export type LeadType = "individual" | "parent" | "school" | "company";
-export type LeadSource = "manual" | "event" | "campaign" | "platform" | "web_app" | "company_school" | "google_maps" | "oms_sync";
+export type LeadSource = "manual" | "event" | "campaign" | "platform" | "web_app" | "company_school" | "google_maps" | "oms_sync" | "embed_widget" | "chat_bot" | "zalo" | "facebook" | "phone_call";
+
+// Channel Types
+export type ChannelType = "zalo" | "facebook" | "sms" | "email" | "phone";
+export type MessageDirection = "inbound" | "outbound";
+
+export interface ChannelMessage {
+  id: string;
+  channel: ChannelType;
+  direction: MessageDirection;
+  sender_id: string | null;
+  sender_name: string | null;
+  sender_phone: string | null;
+  lead_id: string | null;
+  customer_id: string | null;
+  content: string;
+  metadata: Record<string, unknown>;
+  read: boolean;
+  created_at: string;
+}
 export type LeadStage = "new" | "contacted" | "qualified" | "converted" | "lost";
 export type Gender = "M" | "F" | "Other";
 export type ActivityType = "call" | "email" | "meeting" | "note" | "sms" | "system";

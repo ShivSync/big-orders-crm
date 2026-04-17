@@ -54,29 +54,85 @@ export async function POST(
     return NextResponse.json({ error: "No recipients calculated. Calculate segment first." }, { status: 400 });
   }
 
-  const { error: statusErr } = await supabase
+  const { data: locked, error: statusErr } = await supabase
     .from("campaigns")
     .update({ status: "sending", sent_at: new Date().toISOString() })
-    .eq("id", id);
-
-  if (statusErr) {
-    console.error("Campaign status update error:", statusErr);
-    return NextResponse.json({ error: "Failed to update campaign status" }, { status: 500 });
-  }
-
-  // Mark all pending recipients as sent (stub — real integration in Sprint 9)
-  const { data: updatedRecipients, error: recipientErr } = await supabase
-    .from("campaign_recipients")
-    .update({ status: "sent", sent_at: new Date().toISOString() })
-    .eq("campaign_id", id)
-    .eq("status", "pending")
+    .eq("id", id)
+    .in("status", ["draft", "scheduled"])
     .select("id");
 
-  if (recipientErr) {
-    console.error("Recipient update error:", recipientErr);
+  if (statusErr || !locked || locked.length === 0) {
+    return NextResponse.json({ error: "Campaign already being sent or status changed" }, { status: 409 });
   }
 
-  const sentCount = updatedRecipients?.length || 0;
+  const { data: recipients, error: recipientErr } = await supabase
+    .from("campaign_recipients")
+    .select("id, destination, customer_id")
+    .eq("campaign_id", id)
+    .eq("status", "pending");
+
+  if (recipientErr) {
+    console.error("Recipient fetch error:", recipientErr);
+  }
+
+  const allRecipients = recipients || [];
+  let sentCount = 0;
+  let failedCount = 0;
+
+  if (campaign.campaign_type === "sms" && process.env.VIHAT_API_KEY) {
+    const vihatApiKey = process.env.VIHAT_API_KEY;
+    const brandName = process.env.VIHAT_BRAND_NAME || "KFC";
+
+    for (const recipient of allRecipients) {
+      const vihatRes = await fetch("https://api.vihat.vn/sms/send", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${vihatApiKey}`,
+        },
+        body: JSON.stringify({
+          phone: recipient.destination,
+          message: campaign.template || "",
+          brand_name: brandName,
+        }),
+      }).catch(() => null);
+
+      const vihatResult = vihatRes ? await vihatRes.json().catch(() => null) : null;
+      const success = vihatRes?.ok && vihatResult?.error === 0;
+
+      await supabase
+        .from("campaign_recipients")
+        .update({
+          status: success ? "sent" : "failed",
+          sent_at: new Date().toISOString(),
+          error: success ? null : (vihatResult?.message || "Send failed"),
+        })
+        .eq("id", recipient.id);
+
+      if (success) {
+        sentCount++;
+        await supabase.from("channel_messages").insert({
+          channel: "sms",
+          direction: "outbound",
+          sender_phone: recipient.destination,
+          content: (campaign.template || "").slice(0, 500),
+          customer_id: recipient.customer_id,
+          metadata: { campaign_id: id, brand_name: brandName, vihat_response: vihatResult },
+        });
+      } else {
+        failedCount++;
+      }
+    }
+  } else {
+    // Non-Vihat (email or no API key) — mark as sent (stub)
+    const { data: updated } = await supabase
+      .from("campaign_recipients")
+      .update({ status: "sent", sent_at: new Date().toISOString() })
+      .eq("campaign_id", id)
+      .eq("status", "pending")
+      .select("id");
+    sentCount = updated?.length || 0;
+  }
 
   await supabase
     .from("campaigns")
@@ -84,6 +140,7 @@ export async function POST(
       status: "sent",
       sent_count: sentCount,
       delivered_count: sentCount,
+      failed_count: failedCount,
     })
     .eq("id", id);
 

@@ -22,6 +22,8 @@ import {
   MessageSquare, PhoneCall, Video, StickyNote, Send, Settings2,
   Save, Trash2, Plus, UserPlus,
 } from "lucide-react";
+import { ChannelMessagesPanel } from "@/components/channels/channel-messages-panel";
+import { HelpTooltip } from "@/components/ui/help-tooltip";
 import type {
   Lead, LeadStage, LeadType, LeadSource, Store, User, Activity, ActivityType, Gender,
 } from "@/types/database";
@@ -64,6 +66,8 @@ export default function LeadDetailPage() {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [activityDialogOpen, setActivityDialogOpen] = useState(false);
+  const [rightTab, setRightTab] = useState<"activities" | "messages">("activities");
+  const tChannels = useTranslations("channels");
 
   // Edit form state
   const [editData, setEditData] = useState<Partial<Lead>>({});
@@ -200,6 +204,7 @@ export default function LeadDetailPage() {
     const map: Record<LeadSource, string> = {
       manual: "sourceManual", event: "sourceEvent", campaign: "sourceCampaign", platform: "sourcePlatform",
       web_app: "sourceWebApp", company_school: "sourceCompanySchool", google_maps: "sourceGoogleMaps", oms_sync: "sourceOmsSync",
+      embed_widget: "sourceEmbedWidget", chat_bot: "sourceChatBot", zalo: "sourceZalo", facebook: "sourceFacebook", phone_call: "sourcePhoneCall",
     };
     return t(map[ls]);
   };
@@ -274,6 +279,10 @@ export default function LeadDetailPage() {
       {/* Stage Pipeline */}
       <Card>
         <CardContent className="p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-sm font-medium text-gray-500">{t("stage")}</span>
+            <HelpTooltip tooltipKey="leadStage" />
+          </div>
           <div className="flex items-center gap-1">
             {STAGES.map((s, i) => (
               <button
@@ -449,8 +458,30 @@ export default function LeadDetailPage() {
           </Card>
         </div>
 
-        {/* Activity Timeline (right column) */}
+        {/* Activity Timeline + Messages (right column) */}
         <div className="space-y-4">
+          <div className="flex gap-1 border-b">
+            <button
+              onClick={() => setRightTab("activities")}
+              className={`px-3 py-2 text-sm font-medium border-b-2 transition-colors ${rightTab === "activities" ? "border-red-600 text-red-600" : "border-transparent text-gray-500 hover:text-gray-700"}`}
+            >
+              {t("activityTimeline")}
+            </button>
+            <button
+              onClick={() => setRightTab("messages")}
+              className={`px-3 py-2 text-sm font-medium border-b-2 transition-colors ${rightTab === "messages" ? "border-red-600 text-red-600" : "border-transparent text-gray-500 hover:text-gray-700"}`}
+            >
+              {tChannels("messages")}
+            </button>
+          </div>
+
+          {rightTab === "messages" ? (
+            <Card>
+              <CardContent className="pt-4">
+                <ChannelMessagesPanel entityType="lead" entityId={id} />
+              </CardContent>
+            </Card>
+          ) : (
           <Card>
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
@@ -537,6 +568,7 @@ export default function LeadDetailPage() {
               )}
             </CardContent>
           </Card>
+          )}
         </div>
       </div>
     </div>
