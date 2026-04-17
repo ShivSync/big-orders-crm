@@ -118,7 +118,7 @@ SQL files in `supabase/migrations/`. Applied migrations:
 | 5 | Big Orders & Menu | DONE — commit `80140c4` |
 | 6 | Campaigns & Events | DONE — commit `29fb56b` |
 | 7 | Discovery Engine | DONE — commit `c996e73` |
-| 8 | Landing Page & Live Chat | DONE |
+| 8 | Landing Page & Live Chat | DONE — commit `52992a5` |
 | 9-12 | Channels → Settings/Polish | QUEUED (OVE) |
 
 ## Deferred Items
