@@ -258,7 +258,7 @@ export default function OrganizationsPage() {
         </Dialog>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {[
           { label: t("totalOrgs"), value: totalOrgs, icon: Building2, color: "text-gray-900" },
           { label: t("totalRevenue"), value: `₫${totalRevenue.toLocaleString()}`, icon: DollarSign, color: "text-green-600" },
@@ -278,8 +278,8 @@ export default function OrganizationsPage() {
         ))}
       </div>
 
-      <div className="flex items-end gap-4">
-        <div className="flex-1">
+      <div className="flex flex-wrap items-end gap-3">
+        <div className="w-full sm:flex-1 sm:w-auto">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
             <Input
@@ -291,7 +291,7 @@ export default function OrganizationsPage() {
           </div>
         </div>
         <Select value={filterType} onValueChange={(v) => setFilterType(v ?? "all")}>
-          <SelectTrigger className="w-44"><SelectValue placeholder={t("orgType")} /></SelectTrigger>
+          <SelectTrigger className="w-[calc(50%-6px)] sm:w-44"><SelectValue placeholder={t("orgType")} /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{tCommon("all")}</SelectItem>
             {ORG_TYPES.map((ot) => (
@@ -300,7 +300,7 @@ export default function OrganizationsPage() {
           </SelectContent>
         </Select>
         <Select value={filterIndustry} onValueChange={(v) => setFilterIndustry(v ?? "all")}>
-          <SelectTrigger className="w-40"><SelectValue placeholder={t("industry")} /></SelectTrigger>
+          <SelectTrigger className="w-[calc(50%-6px)] sm:w-40"><SelectValue placeholder={t("industry")} /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{tCommon("all")}</SelectItem>
             {INDUSTRIES.map((ind) => (
@@ -309,7 +309,7 @@ export default function OrganizationsPage() {
           </SelectContent>
         </Select>
         <Select value={filterStore} onValueChange={(v) => setFilterStore(v ?? "all")}>
-          <SelectTrigger className="w-40"><SelectValue placeholder={t("store")} /></SelectTrigger>
+          <SelectTrigger className="w-[calc(50%-6px)] sm:w-40"><SelectValue placeholder={t("store")} /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{tCommon("all")}</SelectItem>
             {stores.map((s) => (
@@ -319,7 +319,7 @@ export default function OrganizationsPage() {
         </Select>
         {cities.length > 0 && (
           <Select value={filterCity} onValueChange={(v) => setFilterCity(v ?? "all")}>
-            <SelectTrigger className="w-40"><SelectValue placeholder={t("city")} /></SelectTrigger>
+            <SelectTrigger className="w-[calc(50%-6px)] sm:w-40"><SelectValue placeholder={t("city")} /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">{tCommon("all")}</SelectItem>
               {cities.map((c) => (
@@ -331,7 +331,7 @@ export default function OrganizationsPage() {
       </div>
 
       <Card>
-        <CardContent className="p-0">
+        <CardContent className="p-0 overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>

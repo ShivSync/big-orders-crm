@@ -200,7 +200,7 @@ export default function DiscoveryPage() {
       {/* Filters */}
       <div className="flex gap-4 flex-wrap relative z-10">
         <Select value={selectedStore} onValueChange={(v) => { if (v) setSelectedStore(v === "all" ? "" : v); }}>
-          <SelectTrigger className="w-[250px]">
+          <SelectTrigger className="w-full sm:w-[250px]">
             <SelectValue placeholder={t("selectStore")} />
           </SelectTrigger>
           <SelectContent>
@@ -212,7 +212,7 @@ export default function DiscoveryPage() {
         </Select>
 
         <Select value={categoryFilter} onValueChange={(v) => { if (v) setCategoryFilter(v === "all" ? "" : v); }}>
-          <SelectTrigger className="w-[200px]">
+          <SelectTrigger className="w-full sm:w-[200px]">
             <SelectValue placeholder={t("filterByCategory")} />
           </SelectTrigger>
           <SelectContent>
@@ -226,7 +226,7 @@ export default function DiscoveryPage() {
 
       {/* Map */}
       <Card className="relative z-0">
-        <CardContent className="p-0 h-[400px] relative">
+        <CardContent className="p-0 h-[300px] md:h-[400px] relative">
           <DiscoveryMap
             stores={stores}
             leads={filteredLeads}
@@ -256,7 +256,7 @@ export default function DiscoveryPage() {
 
       {/* Results Table */}
       <Card>
-        <CardContent className="p-0">
+        <CardContent className="p-0 overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>

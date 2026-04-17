@@ -180,7 +180,7 @@ export default function OrdersPage() {
 
       {/* Filters */}
       <div className="flex flex-wrap gap-3 items-center">
-        <div className="relative flex-1 min-w-[200px]">
+        <div className="relative w-full sm:flex-1 sm:min-w-[200px]">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder={tCommon("search")}
@@ -219,8 +219,8 @@ export default function OrdersPage() {
       ) : orders.length === 0 ? (
         <p className="text-muted-foreground">{t("noOrders")}</p>
       ) : (
-        <div className="rounded-md border">
-          <Table>
+        <div className="rounded-md border overflow-x-auto">
+          <Table className="min-w-[800px]">
             <TableHeader>
               <TableRow>
                 <TableHead>{t("orderNumber")}</TableHead>

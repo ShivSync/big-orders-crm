@@ -49,7 +49,7 @@ export default async function DashboardLayout({
           userName={profile?.name || user.email || "User"}
           userRole={roleName}
         />
-        <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
+        <main className="flex-1 overflow-y-auto bg-gray-50 p-3 md:p-6">
           {children}
         </main>
       </div>

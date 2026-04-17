@@ -106,7 +106,7 @@ export default function ChannelsPage() {
         <h1 className="text-2xl font-bold">{t("title")}</h1>
       </div>
 
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4 flex items-center gap-3">
             <Inbox className="h-8 w-8 text-gray-500" />

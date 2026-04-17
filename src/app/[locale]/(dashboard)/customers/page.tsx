@@ -232,7 +232,7 @@ export default function CustomersPage() {
         </Dialog>
       </div>
 
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
           { label: t("totalCustomers"), value: totalCustomers, icon: Users, color: "text-gray-900" },
           { label: t("withOrders"), value: withOrders, icon: ShoppingCart, color: "text-blue-600" },
@@ -253,8 +253,8 @@ export default function CustomersPage() {
         ))}
       </div>
 
-      <div className="flex items-end gap-4">
-        <div className="flex-1">
+      <div className="flex flex-wrap items-end gap-3">
+        <div className="w-full sm:flex-1 sm:w-auto">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
             <Input
@@ -266,7 +266,7 @@ export default function CustomersPage() {
           </div>
         </div>
         <Select value={filterType} onValueChange={(v) => setFilterType(v ?? "all")}>
-          <SelectTrigger className="w-44"><SelectValue placeholder={t("contactType")} /></SelectTrigger>
+          <SelectTrigger className="w-[calc(50%-6px)] sm:w-44"><SelectValue placeholder={t("contactType")} /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{tCommon("all")}</SelectItem>
             {CONTACT_TYPES.map((ct) => (
@@ -275,7 +275,7 @@ export default function CustomersPage() {
           </SelectContent>
         </Select>
         <Select value={filterStore} onValueChange={(v) => setFilterStore(v ?? "all")}>
-          <SelectTrigger className="w-40"><SelectValue placeholder={t("store")} /></SelectTrigger>
+          <SelectTrigger className="w-[calc(50%-6px)] sm:w-40"><SelectValue placeholder={t("store")} /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{tCommon("all")}</SelectItem>
             {stores.map((s) => (
@@ -285,7 +285,7 @@ export default function CustomersPage() {
         </Select>
         {cities.length > 0 && (
           <Select value={filterCity} onValueChange={(v) => setFilterCity(v ?? "all")}>
-            <SelectTrigger className="w-40"><SelectValue placeholder={t("city")} /></SelectTrigger>
+            <SelectTrigger className="w-[calc(50%-6px)] sm:w-40"><SelectValue placeholder={t("city")} /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">{tCommon("all")}</SelectItem>
               {cities.map((c) => (
@@ -297,8 +297,8 @@ export default function CustomersPage() {
       </div>
 
       <Card>
-        <CardContent className="p-0">
-          <Table>
+        <CardContent className="p-0 overflow-x-auto">
+          <Table className="min-w-[800px]">
             <TableHeader>
               <TableRow>
                 <TableHead>{t("fullName")}</TableHead>

@@ -170,7 +170,7 @@ export default function CampaignsPage() {
         </Dialog>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card>
           <CardContent className="flex items-center gap-3 p-4">
             <Megaphone className="h-8 w-8 text-blue-600" />
@@ -200,8 +200,8 @@ export default function CampaignsPage() {
         </Card>
       </div>
 
-      <div className="flex items-center gap-3">
-        <div className="relative flex-1">
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="relative w-full sm:flex-1 sm:w-auto">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder={t("campaignName")}
@@ -229,8 +229,8 @@ export default function CampaignsPage() {
         </Select>
       </div>
 
-      <Card>
-        <Table>
+      <Card className="overflow-x-auto">
+        <Table className="min-w-[700px]">
           <TableHeader>
             <TableRow>
               <TableHead>{t("campaignName")}</TableHead>

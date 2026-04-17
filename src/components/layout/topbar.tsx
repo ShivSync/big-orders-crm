@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Globe, LogOut } from "lucide-react";
+import { MobileMenuButton } from "./sidebar";
 
 export function Topbar({ userName, userRole }: { userName: string; userRole: string }) {
   const t = useTranslations("auth");
@@ -41,7 +42,7 @@ export function Topbar({ userName, userRole }: { userName: string; userRole: str
 
   return (
     <header className="flex h-14 items-center justify-between border-b bg-white px-4">
-      <div />
+      <MobileMenuButton />
       <div className="flex items-center gap-2">
         <Button variant="ghost" size="sm" onClick={switchLocale} className="gap-1">
           <Globe className="h-4 w-4" />
