@@ -41,10 +41,9 @@ test.describe("Sprint 8: Landing Page & Chat", () => {
     await page.waitForLoadState("domcontentloaded");
 
     await page.locator("#booking-form").scrollIntoViewIfNeeded();
-    await page.locator('input[type="tel"]').fill("0901234567");
 
-    const nameInputs = page.locator("#booking-form input").first();
-    await nameInputs.fill("Test User E2E");
+    await page.locator('input[placeholder="Nguyễn Văn A"]').fill("Test User E2E");
+    await page.locator('input[type="tel"]').fill("0901234567");
 
     const [apiResp] = await Promise.all([
       page.waitForResponse(
@@ -61,8 +60,8 @@ test.describe("Sprint 8: Landing Page & Chat", () => {
     test.skip(response?.status() === 404, "Landing page not deployed yet");
     await page.waitForLoadState("domcontentloaded");
 
-    await expect(page.locator("text=260+")).toBeVisible();
-    await expect(page.locator("text=89,000đ")).toBeVisible();
+    await expect(page.locator("text=20 - 500")).toBeVisible();
+    await expect(page.locator("text=89,000đ").first()).toBeVisible();
   });
 
   test("should show menu showcase", async ({ page }) => {

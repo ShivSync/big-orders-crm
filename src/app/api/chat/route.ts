@@ -141,7 +141,7 @@ export async function POST(request: NextRequest) {
       const { data: lead, error } = await supabase
         .from("leads")
         .insert({
-          company_name: safeName,
+          full_name: safeName,
           phone: safePhone,
           lead_source: "chat_bot",
           stage: "new",

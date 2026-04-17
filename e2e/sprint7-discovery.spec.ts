@@ -60,7 +60,7 @@ test.describe("Sprint 7: Discovery Engine", () => {
     const discoveryLink = page.locator('nav a[href*="discovery"]');
     await expect(discoveryLink).toBeVisible();
 
-    const settingsLink = page.locator('nav a[href*="settings"]');
+    const settingsLink = page.locator('nav a[href$="/settings"]');
     await expect(settingsLink).toBeVisible();
   });
 });
