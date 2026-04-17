@@ -56,6 +56,21 @@ export async function POST(
     return NextResponse.json({ error: "Only qualified leads can be converted to opportunities" }, { status: 400 });
   }
 
+  // M1: Check for existing active opportunity from this lead
+  const { data: existingOpp } = await supabase
+    .from("opportunities")
+    .select("id")
+    .eq("lead_id", id)
+    .is("deleted_at", null)
+    .limit(1);
+
+  if (existingOpp && existingOpp.length > 0) {
+    return NextResponse.json(
+      { error: "An opportunity already exists for this lead", existingId: existingOpp[0].id },
+      { status: 409 }
+    );
+  }
+
   // Parse optional body
   const body = await request.json().catch(() => ({}));
   const title = body.title || `Opportunity: ${lead.full_name}`;
@@ -79,7 +94,8 @@ export async function POST(
     .single();
 
   if (oppError) {
-    return NextResponse.json({ error: oppError.message }, { status: 500 });
+    console.error("Opportunity create error:", oppError);
+    return NextResponse.json({ error: "Failed to create opportunity" }, { status: 500 });
   }
 
   // Log activity on the lead

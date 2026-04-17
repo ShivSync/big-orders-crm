@@ -265,7 +265,7 @@ export interface Opportunity {
 }
 
 export interface OpportunityWithRelations extends Opportunity {
-  lead?: Pick<Lead, "id" | "full_name" | "phone"> | null;
-  customer?: Pick<IndividualCustomer, "id" | "full_name" | "phone"> | null;
-  assigned_user?: Pick<User, "id" | "name" | "email"> | null;
+  lead?: Pick<Lead, "id" | "full_name"> | null;
+  customer?: Pick<IndividualCustomer, "id" | "full_name"> | null;
+  assigned_user?: Pick<User, "id" | "name"> | null;
 }

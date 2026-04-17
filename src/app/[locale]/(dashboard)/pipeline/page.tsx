@@ -117,7 +117,7 @@ function OpportunityCard({
             {opp.assigned_user && (
               <span className="flex items-center gap-1 truncate">
                 <UserIcon className="h-3 w-3" />
-                {opp.assigned_user.name || opp.assigned_user.email}
+                {opp.assigned_user.name}
               </span>
             )}
             {opp.expected_date && (
@@ -184,9 +184,9 @@ export default function PipelinePage() {
   const supabase = createClient();
 
   const [opportunities, setOpportunities] = useState<OpportunityWithRelations[]>([]);
-  const [users, setUsers] = useState<Pick<User, "id" | "name" | "email">[]>([]);
-  const [qualifiedLeads, setQualifiedLeads] = useState<Pick<Lead, "id" | "full_name" | "phone">[]>([]);
-  const [customers, setCustomers] = useState<Pick<IndividualCustomer, "id" | "full_name" | "phone">[]>([]);
+  const [users, setUsers] = useState<Pick<User, "id" | "name">[]>([]);
+  const [qualifiedLeads, setQualifiedLeads] = useState<Pick<Lead, "id" | "full_name">[]>([]);
+  const [customers, setCustomers] = useState<Pick<IndividualCustomer, "id" | "full_name">[]>([]);
   const [loading, setLoading] = useState(true);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [detailOpp, setDetailOpp] = useState<OpportunityWithRelations | null>(null);
@@ -218,12 +218,12 @@ export default function PipelinePage() {
     const [oppsRes, usersRes, leadsRes, customersRes] = await Promise.all([
       supabase
         .from("opportunities")
-        .select("*, lead:leads(id, full_name, phone), customer:individual_customers(id, full_name, phone), assigned_user:users!opportunities_assigned_to_fkey(id, name, email)")
+        .select("*, lead:leads(id, full_name), customer:individual_customers(id, full_name), assigned_user:users!opportunities_assigned_to_fkey(id, name)")
         .is("deleted_at", null)
         .order("created_at", { ascending: false }),
-      supabase.from("users").select("id, name, email").eq("status", "active"),
-      supabase.from("leads").select("id, full_name, phone").eq("stage", "qualified").is("deleted_at", null),
-      supabase.from("individual_customers").select("id, full_name, phone").is("deleted_at", null),
+      supabase.from("users").select("id, name").eq("status", "active"),
+      supabase.from("leads").select("id, full_name").eq("stage", "qualified").is("deleted_at", null),
+      supabase.from("individual_customers").select("id, full_name").is("deleted_at", null),
     ]);
 
     if (oppsRes.data) setOpportunities(oppsRes.data as OpportunityWithRelations[]);
@@ -239,10 +239,14 @@ export default function PipelinePage() {
   }, [loadData]);
 
   const updateStage = async (id: string, newStage: OpportunityStage, extraFields?: Record<string, unknown>) => {
-    const updateData: Record<string, unknown> = { stage: newStage, ...extraFields };
-    const { error } = await supabase.from("opportunities").update(updateData).eq("id", id);
-    if (error) {
-      toast.error(error.message);
+    const res = await fetch(`/api/opportunities/${id}/stage`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ stage: newStage, ...extraFields }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      toast.error(data.error || "Failed to update stage");
       return;
     }
     toast.success(t("opportunityUpdated"));
@@ -306,18 +310,22 @@ export default function PipelinePage() {
 
   const handleCreate = async () => {
     if (!formTitle.trim()) return;
-    const { error } = await supabase.from("opportunities").insert({
-      title: formTitle.trim(),
-      lead_id: formLeadId || null,
-      customer_id: formCustomerId || null,
-      expected_value: formExpectedValue ? parseInt(formExpectedValue, 10) : 0,
-      expected_date: formExpectedDate || null,
-      assigned_to: formAssignedTo || null,
-      notes: formNotes || null,
-      stage: "new",
+    const res = await fetch("/api/opportunities", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: formTitle.trim(),
+        lead_id: formLeadId || null,
+        customer_id: formCustomerId || null,
+        expected_value: formExpectedValue ? parseInt(formExpectedValue, 10) : 0,
+        expected_date: formExpectedDate || null,
+        assigned_to: formAssignedTo || null,
+        notes: formNotes || null,
+      }),
     });
-    if (error) {
-      toast.error(error.message);
+    const data = await res.json();
+    if (!res.ok) {
+      toast.error(data.error || "Failed to create opportunity");
       return;
     }
     toast.success(t("opportunityCreated"));
@@ -378,7 +386,7 @@ export default function PipelinePage() {
                     <SelectContent>
                       {qualifiedLeads.map((l) => (
                         <SelectItem key={l.id} value={l.id}>
-                          {l.full_name} {l.phone ? `(${l.phone})` : ""}
+                          {l.full_name}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -392,7 +400,7 @@ export default function PipelinePage() {
                     <SelectContent>
                       {customers.map((c) => (
                         <SelectItem key={c.id} value={c.id}>
-                          {c.full_name} {c.phone ? `(${c.phone})` : ""}
+                          {c.full_name}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -415,7 +423,7 @@ export default function PipelinePage() {
                   <SelectTrigger><SelectValue placeholder="—" /></SelectTrigger>
                   <SelectContent>
                     {users.map((u) => (
-                      <SelectItem key={u.id} value={u.id}>{u.name || u.email}</SelectItem>
+                      <SelectItem key={u.id} value={u.id}>{u.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -586,19 +594,19 @@ export default function PipelinePage() {
               {detailOpp.assigned_user && (
                 <div>
                   <Label className="text-muted-foreground text-xs">{t("assignedTo")}</Label>
-                  <p>{detailOpp.assigned_user.name || detailOpp.assigned_user.email}</p>
+                  <p>{detailOpp.assigned_user.name}</p>
                 </div>
               )}
               {detailOpp.lead && (
                 <div>
                   <Label className="text-muted-foreground text-xs">{t("sourceLead")}</Label>
-                  <p>{detailOpp.lead.full_name} {detailOpp.lead.phone ? `(${detailOpp.lead.phone})` : ""}</p>
+                  <p>{detailOpp.lead.full_name}</p>
                 </div>
               )}
               {detailOpp.customer && (
                 <div>
                   <Label className="text-muted-foreground text-xs">{t("linkedCustomer")}</Label>
-                  <p>{detailOpp.customer.full_name} {detailOpp.customer.phone ? `(${detailOpp.customer.phone})` : ""}</p>
+                  <p>{detailOpp.customer.full_name}</p>
                 </div>
               )}
               {detailOpp.notes && (

@@ -168,3 +168,76 @@ describe("Search sanitization", () => {
     expect(sanitizeSearch("   ")).toBe("");
   });
 });
+
+describe("Sprint 4 security fixes", () => {
+  const secSql = readFileSync(
+    join(process.cwd(), "supabase/migrations/20260417600000_sprint4_security_fixes.sql"),
+    "utf-8"
+  );
+
+  it("should enforce deleted_at IS NULL in update policy", () => {
+    expect(secSql).toContain("deleted_at IS NULL");
+  });
+
+  it("should separate delete authority from edit authority", () => {
+    expect(secSql).toContain("pipeline.delete");
+    expect(secSql).toContain("opportunities_soft_delete");
+  });
+
+  it("should have partial unique index for idempotent lead conversion", () => {
+    expect(secSql).toContain("idx_opportunities_unique_lead");
+    expect(secSql).toContain("lead_id IS NOT NULL AND deleted_at IS NULL");
+  });
+
+  it("should include root user bypass in select policy", () => {
+    expect(secSql).toContain("is_root = true");
+  });
+
+  describe("Server-side API routes", () => {
+    const createRoute = readFileSync(
+      join(process.cwd(), "src/app/api/opportunities/route.ts"),
+      "utf-8"
+    );
+    const stageRoute = readFileSync(
+      join(process.cwd(), "src/app/api/opportunities/[id]/stage/route.ts"),
+      "utf-8"
+    );
+    const convertRoute = readFileSync(
+      join(process.cwd(), "src/app/api/leads/[id]/convert-to-opportunity/route.ts"),
+      "utf-8"
+    );
+
+    it("should check pipeline.create permission in create route", () => {
+      expect(createRoute).toContain("pipeline.create");
+    });
+
+    it("should check pipeline.edit permission in stage route", () => {
+      expect(stageRoute).toContain("pipeline.edit");
+    });
+
+    it("should validate referenced entities in create route (H3)", () => {
+      expect(createRoute).toContain("Referenced lead not found");
+      expect(createRoute).toContain("Referenced customer not found");
+      expect(createRoute).toContain("Referenced assignee not found");
+    });
+
+    it("should return generic errors, not raw DB errors (M2)", () => {
+      expect(createRoute).toContain("Failed to create opportunity");
+      expect(createRoute).not.toContain("error.message");
+      expect(stageRoute).toContain("Failed to update stage");
+      expect(stageRoute).not.toContain("error.message");
+    });
+
+    it("should validate won requires actual_value", () => {
+      expect(stageRoute).toContain("Won stage requires a positive actual_value");
+    });
+
+    it("should validate lost requires lost_reason", () => {
+      expect(stageRoute).toContain("Lost stage requires a lost_reason");
+    });
+
+    it("should check for existing opportunity before conversion (M1)", () => {
+      expect(convertRoute).toContain("An opportunity already exists for this lead");
+    });
+  });
+});

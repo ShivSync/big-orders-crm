@@ -275,9 +275,9 @@ describe("Database types", () => {
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         deleted_at: null,
-        lead: { id: "lead-uuid", full_name: "Test Lead", phone: "0901234567" },
-        customer: { id: "cust-uuid", full_name: "Test Customer", phone: "0909876543" },
-        assigned_user: { id: "user-uuid", name: "Admin", email: "admin@bigorders.vn" },
+        lead: { id: "lead-uuid", full_name: "Test Lead" },
+        customer: { id: "cust-uuid", full_name: "Test Customer" },
+        assigned_user: { id: "user-uuid", name: "Admin" },
       };
       expect(opp.lead?.full_name).toBe("Test Lead");
       expect(opp.customer?.full_name).toBe("Test Customer");
