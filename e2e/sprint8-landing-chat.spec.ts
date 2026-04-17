@@ -95,12 +95,12 @@ test.describe("Sprint 8: Landing Page & Chat", () => {
     expect(response.status()).toBe(400);
   });
 
-  test("embed API should accept valid request with CORS", async ({ request }) => {
+  test("embed API should accept valid request", async ({ request }) => {
     const response = await request.post("/api/leads/embed", {
       data: {
         name: "Embed Test",
         phone: "0901234569",
-        event_type: "corporate",
+        event_type: "birthday",
       },
     });
     test.skip(response.status() === 404, "API not deployed yet");

@@ -1,5 +1,11 @@
 -- Sprint 8: Landing Page & Live Chat
 
+-- Extend lead_source constraint for new sources
+ALTER TABLE leads DROP CONSTRAINT IF EXISTS leads_lead_source_check;
+ALTER TABLE leads ADD CONSTRAINT leads_lead_source_check CHECK (
+  lead_source = ANY (ARRAY['manual', 'event', 'campaign', 'platform', 'web_app', 'company_school', 'google_maps', 'oms_sync', 'embed_widget', 'chat_bot'])
+);
+
 -- 1. Landing page CMS content
 CREATE TABLE IF NOT EXISTS landing_page_content (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
