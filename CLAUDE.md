@@ -25,6 +25,7 @@ Key ones: D-2 (Next.js + Supabase), D-3 (CRM owns Big Order lifecycle), D-6 (RLS
 - Data masking: `mask_phone()` / `mask_email()` in DB, gated by permission
 - Server-side API routes for mutations (not client-side Supabase calls) — enforced after Sprint 3 Codex review
 - Tests: vitest with config in `vitest.config.ts`
+- Documentation: `docs/` folder updated with every sprint (sprint-log.md, api-reference.md, database.md)
 
 ## Commands
 ```bash
