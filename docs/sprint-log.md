@@ -187,10 +187,25 @@ Each sprint includes: DB migration, UI pages, API routes, i18n keys, tests, and 
 
 ---
 
+## Sprint 10: OMS Integration
+
+**Status:** DONE | **Date:** 2026-04-18 | **Commit:** pending
+
+**Built:**
+- OMS store sync — mock adapter (ready for real KFC OMS API swap-in), syncs `oms_store_id` and `last_synced_at` on `stores` table
+- Historical customer import from OMS `big_order_customers` table — bulk seed into `individual_customers` with dedup by phone
+- OMS webhook receiver (Phase 1 — log only) — `POST /api/webhooks/oms` with HMAC signature verification and rate limiting; logs payloads, does not yet process events
+- `/settings/integrations` UI page — OMS connection status, sync triggers, last sync timestamp, webhook secret display
+- Integration permissions seeded: `integrations.view`, `integrations.manage`
+- DB: `oms_store_id` (text) and `last_synced_at` (timestamptz) columns added to `stores` table
+- Indexes: `idx_stores_oms_store_id`, `idx_stores_aloha_id`
+- Server-side API routes: `POST /api/oms/sync-stores`, `POST /api/oms/seed-customers`, `GET /api/oms/sync-status`, `POST /api/webhooks/oms`
+
+---
+
 ## Upcoming Sprints
 
 | Sprint | Name | Key Deliverables |
 |--------|------|-----------------|
-| 10 | OMS Integration | Store sync, historical data seed |
 | 11 | Reports & Dashboards | Analytics, KPIs, export |
 | 12 | Settings & Polish | Admin settings, UX polish, final QA |

@@ -4,7 +4,7 @@
 
 PostgreSQL via Supabase self-hosted on EC2. All tables have RLS enabled, soft delete via `deleted_at`, and `updated_at` triggers.
 
-## Tables (32 total as of Sprint 9)
+## Tables (32 total as of Sprint 10)
 
 ### Sprint 1: Foundation (13 tables)
 
@@ -149,6 +149,29 @@ PostgreSQL via Supabase self-hosted on EC2. All tables have RLS enabled, soft de
 |------|-------------|
 | `channels.view` | View channel messages in inbox and 360 views |
 | `channels.send` | Send outbound messages (SMS, ZNS) and manage messages |
+
+### Sprint 10: OMS Integration (schema changes)
+
+**Modified table: `stores`**
+
+| Column | Type | Constraints | Description |
+|--------|------|-------------|-------------|
+| `oms_store_id` | `text` | nullable, unique | OMS external store identifier |
+| `last_synced_at` | `timestamptz` | nullable | Last successful OMS sync timestamp |
+
+#### New Indexes
+
+| Index | Columns | Purpose |
+|-------|---------|---------|
+| `idx_stores_oms_store_id` | `oms_store_id` | OMS store lookup during sync |
+| `idx_stores_aloha_id` | `aloha_id` | Store matching by Aloha POS ID |
+
+#### Permissions
+
+| Slug | Description |
+|------|-------------|
+| `integrations.view` | View OMS integration status and sync history |
+| `integrations.manage` | Trigger OMS sync, seed customers, manage webhook settings |
 
 ## RLS Pattern
 

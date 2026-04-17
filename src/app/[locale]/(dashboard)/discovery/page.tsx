@@ -198,7 +198,7 @@ export default function DiscoveryPage() {
       </div>
 
       {/* Filters */}
-      <div className="flex gap-4 flex-wrap">
+      <div className="flex gap-4 flex-wrap relative z-10">
         <Select value={selectedStore} onValueChange={(v) => { if (v) setSelectedStore(v === "all" ? "" : v); }}>
           <SelectTrigger className="w-[250px]">
             <SelectValue placeholder={t("selectStore")} />
@@ -225,7 +225,7 @@ export default function DiscoveryPage() {
       </div>
 
       {/* Map */}
-      <Card>
+      <Card className="relative z-0">
         <CardContent className="p-0 h-[400px]">
           <DiscoveryMap
             stores={stores}

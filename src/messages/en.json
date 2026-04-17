@@ -38,7 +38,8 @@
     "users": "Users",
     "roles": "Roles",
     "teams": "Teams",
-    "help": "Help"
+    "help": "Help",
+    "integrations": "Integrations"
   },
   "auth": {
     "login": "Log in",
@@ -695,5 +696,33 @@
     "send": "Send",
     "online": "Online",
     "typing": "Typing..."
+  },
+  "integrations": {
+    "title": "OMS Integration",
+    "connectionStatus": "Connection Status",
+    "connected": "Connected",
+    "disconnected": "Disconnected",
+    "mockMode": "Mock Mode",
+    "webhookUrl": "Webhook URL",
+    "webhookDescription": "Provide this URL to OMS for webhook configuration",
+    "copyUrl": "Copy URL",
+    "copied": "Copied!",
+    "omsSync": "Store Sync",
+    "omsSyncDescription": "Sync store master data from OMS. Matches by Aloha ID. Preserves manual fields (territory radius, coordinates).",
+    "syncNow": "Sync Now",
+    "syncing": "Syncing...",
+    "lastSynced": "Last Synced",
+    "never": "Never",
+    "storeCount": "{count} of {total} stores linked to OMS",
+    "syncSuccess": "Sync complete: {created} created, {updated} updated",
+    "syncError": "Sync failed. Please try again.",
+    "customerSeed": "Historical Customer Import",
+    "customerSeedDescription": "One-time import of Big Order customers from OMS. Deduplicates by phone number. Sets oms_customer_id on matched records.",
+    "importHistory": "Import Historical Data",
+    "importing": "Importing...",
+    "importComplete": "Import complete: {created} created, {updated} updated, {skipped} skipped",
+    "importError": "Import failed. Please try again.",
+    "alreadyImported": "{count} customers already imported from OMS",
+    "noOmsCustomers": "No OMS customers imported yet"
   }
 }

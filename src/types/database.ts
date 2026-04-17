@@ -78,6 +78,8 @@ export interface Store {
   lng: number | null;
   territory_radius_km: number;
   active: boolean;
+  oms_store_id: string | null;
+  last_synced_at: string | null;
 }
 
 export interface AuditLog {

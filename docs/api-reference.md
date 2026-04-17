@@ -329,6 +329,80 @@ Mark a channel message as read.
 
 ---
 
+### POST /api/oms/sync-stores
+Sync store data from KFC OMS. Updates `oms_store_id` and `last_synced_at` on matched stores.
+
+**Permissions:** `integrations.manage`
+
+**Behavior:**
+- Calls OMS store list endpoint (mock adapter in Phase 1)
+- Matches OMS stores to CRM stores by Aloha ID or store name
+- Updates `oms_store_id` and `last_synced_at` on matched rows
+- Returns sync summary (matched, skipped, errors)
+
+**Response:** `{ "success": true, "matched": 244, "skipped": 0, "errors": [] }`
+
+---
+
+### POST /api/oms/seed-customers
+Import historical big-order customers from OMS `big_order_customers` table.
+
+**Permissions:** `integrations.manage`
+
+**Behavior:**
+- Fetches customer records from OMS (mock adapter in Phase 1)
+- Deduplicates against existing `individual_customers` by phone number
+- Creates new customer records for unmatched entries
+- Returns import summary
+
+**Response:** `{ "success": true, "imported": 150, "duplicates_skipped": 12, "errors": [] }`
+
+---
+
+### GET /api/oms/sync-status
+Get current OMS integration sync status.
+
+**Permissions:** Authenticated (any user)
+
+**Response:**
+```json
+{
+  "store_sync": {
+    "last_synced_at": "2026-04-18T10:30:00Z",
+    "stores_linked": 244,
+    "stores_unlinked": 0
+  },
+  "customer_import": {
+    "last_run_at": "2026-04-18T09:00:00Z",
+    "total_imported": 150
+  },
+  "webhook": {
+    "active": true,
+    "last_received_at": "2026-04-18T11:00:00Z"
+  }
+}
+```
+
+---
+
+### POST /api/webhooks/oms
+Receive webhook events from KFC OMS (Phase 1 — log only).
+
+**Authentication:** None (public webhook). HMAC-SHA256 signature verification via `X-OMS-Signature` header.
+
+**Rate limiting:** 100 requests per minute per IP.
+
+**Body:** OMS webhook payload (order events, store updates, etc.).
+
+**Behavior:**
+- Verifies HMAC-SHA256 signature against configured webhook secret
+- Logs full payload to `audit_logs` for future processing
+- Phase 1: does not create/update CRM records (log-only mode)
+
+**Response:** `200 OK` (body: `{ "received": true }`)
+
+---
+
 ## Error Responses
 
 All errors follow this format:

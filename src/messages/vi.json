@@ -38,7 +38,8 @@
     "users": "Người dùng",
     "roles": "Vai trò",
     "teams": "Nhóm",
-    "help": "Trợ giúp"
+    "help": "Trợ giúp",
+    "integrations": "Tích hợp"
   },
   "auth": {
     "login": "Đăng nhập",
@@ -695,5 +696,33 @@
     "send": "Gửi",
     "online": "Trực tuyến",
     "typing": "Đang gõ..."
+  },
+  "integrations": {
+    "title": "Tích hợp OMS",
+    "connectionStatus": "Trạng thái kết nối",
+    "connected": "Đã kết nối",
+    "disconnected": "Mất kết nối",
+    "mockMode": "Chế độ giả lập",
+    "webhookUrl": "URL Webhook",
+    "webhookDescription": "Cung cấp URL này cho OMS để cấu hình webhook",
+    "copyUrl": "Sao chép URL",
+    "copied": "Đã sao chép!",
+    "omsSync": "Đồng bộ cửa hàng",
+    "omsSyncDescription": "Đồng bộ dữ liệu cửa hàng từ OMS. Ghép theo Aloha ID. Giữ nguyên các trường thủ công (bán kính vùng, tọa độ).",
+    "syncNow": "Đồng bộ ngay",
+    "syncing": "Đang đồng bộ...",
+    "lastSynced": "Đồng bộ lần cuối",
+    "never": "Chưa bao giờ",
+    "storeCount": "{count} / {total} cửa hàng liên kết OMS",
+    "syncSuccess": "Hoàn tất: {created} tạo mới, {updated} cập nhật",
+    "syncError": "Đồng bộ thất bại. Vui lòng thử lại.",
+    "customerSeed": "Nhập khách hàng lịch sử",
+    "customerSeedDescription": "Nhập một lần khách hàng Big Order từ OMS. Loại bỏ trùng lặp theo số điện thoại. Gán oms_customer_id cho bản ghi khớp.",
+    "importHistory": "Nhập dữ liệu lịch sử",
+    "importing": "Đang nhập...",
+    "importComplete": "Hoàn tất: {created} tạo mới, {updated} cập nhật, {skipped} bỏ qua",
+    "importError": "Nhập thất bại. Vui lòng thử lại.",
+    "alreadyImported": "{count} khách hàng đã nhập từ OMS",
+    "noOmsCustomers": "Chưa nhập khách hàng OMS nào"
   }
 }
