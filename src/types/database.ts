@@ -241,3 +241,31 @@ export interface CustomerOrgLink {
   active: boolean;
   created_at: string;
 }
+
+// Pipeline & Opportunity Types
+export type OpportunityStage = "new" | "consulting" | "quoted" | "negotiating" | "won" | "lost";
+
+export interface Opportunity {
+  id: string;
+  lead_id: string | null;
+  customer_id: string | null;
+  title: string;
+  stage: OpportunityStage;
+  expected_value: number;
+  expected_date: string | null;
+  actual_value: number | null;
+  lost_reason: string | null;
+  assigned_to: string | null;
+  notes: string | null;
+  order_id: string | null;
+  metadata: Record<string, unknown>;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+}
+
+export interface OpportunityWithRelations extends Opportunity {
+  lead?: Pick<Lead, "id" | "full_name" | "phone"> | null;
+  customer?: Pick<IndividualCustomer, "id" | "full_name" | "phone"> | null;
+  assigned_user?: Pick<User, "id" | "name" | "email"> | null;
+}

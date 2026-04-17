@@ -65,6 +65,25 @@ describe("i18n completeness", () => {
     }
   });
 
+  it("should have pipeline section in both languages", () => {
+    expect(en).toHaveProperty("pipeline");
+    expect(vi).toHaveProperty("pipeline");
+  });
+
+  it("should have all 6 pipeline stage labels translated", () => {
+    for (const key of ["stageNew", "stageConsulting", "stageQuoted", "stageNegotiating", "stageWon", "stageLost"]) {
+      expect(en.pipeline).toHaveProperty(key);
+      expect(vi.pipeline).toHaveProperty(key);
+    }
+  });
+
+  it("should have pipeline-specific terms translated", () => {
+    for (const key of ["expectedValue", "expectedDate", "actualValue", "lostReason", "pipelineValue", "convertToOrder", "totalPipelineValue", "wonValue"]) {
+      expect(en.pipeline).toHaveProperty(key);
+      expect(vi.pipeline).toHaveProperty(key);
+    }
+  });
+
   it("should have no empty string values", () => {
     const emptyEn = enKeys.filter((k) => {
       const parts = k.split(".");

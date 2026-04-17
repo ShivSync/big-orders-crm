@@ -5,7 +5,7 @@ import { Link, usePathname } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard, Users, UserCog, UsersRound, Settings, Package,
-  Target, Building2, ShoppingCart, Megaphone, MapPin, BarChart3,
+  Target, Building2, ShoppingCart, Megaphone, MapPin, BarChart3, Kanban,
 } from "lucide-react";
 
 const navSections = [
@@ -17,7 +17,7 @@ const navSections = [
   {
     items: [
       { key: "leads", href: "/leads", icon: Target },
-      { key: "pipeline", href: "/pipeline", icon: BarChart3 },
+      { key: "pipeline", href: "/pipeline", icon: Kanban },
       { key: "customers", href: "/customers", icon: Users },
       { key: "organizations", href: "/organizations", icon: Building2 },
       { key: "orders", href: "/orders", icon: ShoppingCart },

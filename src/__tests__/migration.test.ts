@@ -159,4 +159,69 @@ describe("Database migrations", () => {
       expect(sql).toContain("deleted_at IS NULL");
     });
   });
+
+  describe("Sprint 4: Pipeline migration", () => {
+    const sql = readFileSync(join(migrationsDir, "20260417500000_sprint4_pipeline.sql"), "utf-8");
+
+    it("should create opportunities table", () => {
+      expect(sql).toContain("CREATE TABLE opportunities");
+    });
+
+    it("should have all required columns", () => {
+      expect(sql).toContain("lead_id uuid");
+      expect(sql).toContain("customer_id uuid");
+      expect(sql).toContain("title text NOT NULL");
+      expect(sql).toContain("stage text NOT NULL");
+      expect(sql).toContain("expected_value bigint");
+      expect(sql).toContain("expected_date date");
+      expect(sql).toContain("actual_value bigint");
+      expect(sql).toContain("lost_reason text");
+      expect(sql).toContain("assigned_to uuid");
+      expect(sql).toContain("order_id uuid");
+    });
+
+    it("should have stage CHECK constraint with 6 values", () => {
+      expect(sql).toContain("'new'");
+      expect(sql).toContain("'consulting'");
+      expect(sql).toContain("'quoted'");
+      expect(sql).toContain("'negotiating'");
+      expect(sql).toContain("'won'");
+      expect(sql).toContain("'lost'");
+    });
+
+    it("should have foreign keys to leads, individual_customers, users", () => {
+      expect(sql).toContain("REFERENCES leads(id)");
+      expect(sql).toContain("REFERENCES individual_customers(id)");
+      expect(sql).toContain("REFERENCES users(id)");
+    });
+
+    it("should enable RLS", () => {
+      expect(sql).toContain("ALTER TABLE opportunities ENABLE ROW LEVEL SECURITY");
+    });
+
+    it("should have RLS policies with pipeline permission checks", () => {
+      expect(sql).toContain("pipeline.view");
+      expect(sql).toContain("pipeline.create");
+      expect(sql).toContain("pipeline.edit");
+    });
+
+    it("should have indexes on stage, lead_id, customer_id, assigned_to, expected_date", () => {
+      expect(sql).toContain("idx_opportunities_stage");
+      expect(sql).toContain("idx_opportunities_lead_id");
+      expect(sql).toContain("idx_opportunities_customer_id");
+      expect(sql).toContain("idx_opportunities_assigned_to");
+      expect(sql).toContain("idx_opportunities_expected_date");
+    });
+
+    it("should have soft delete support", () => {
+      expect(sql).toContain("deleted_at");
+    });
+
+    it("should seed pipeline permissions", () => {
+      expect(sql).toContain("pipeline.view");
+      expect(sql).toContain("pipeline.create");
+      expect(sql).toContain("pipeline.edit");
+      expect(sql).toContain("pipeline.delete");
+    });
+  });
 });

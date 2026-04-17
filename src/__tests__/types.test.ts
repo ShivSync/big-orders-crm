@@ -4,6 +4,7 @@ import type {
   User, Store, Role, Region, FilterStore,
   IndividualCustomer, Organization, CustomerOrgLink,
   ContactType, OrganizationType, OrgSize,
+  Opportunity, OpportunityStage, OpportunityWithRelations,
 } from "@/types/database";
 
 describe("Database types", () => {
@@ -178,6 +179,109 @@ describe("Database types", () => {
       };
       expect(link.role_title).toBe("Head Teacher");
       expect(link.is_primary_contact).toBe(true);
+    });
+  });
+
+  describe("Opportunity types", () => {
+    it("should accept valid opportunity stages", () => {
+      const stages: OpportunityStage[] = ["new", "consulting", "quoted", "negotiating", "won", "lost"];
+      expect(stages).toHaveLength(6);
+    });
+
+    it("should construct a valid Opportunity object", () => {
+      const opp: Opportunity = {
+        id: "opp-uuid",
+        lead_id: "lead-uuid",
+        customer_id: null,
+        title: "KFC Party Order - ABC School",
+        stage: "consulting",
+        expected_value: 15000000,
+        expected_date: "2026-06-15",
+        actual_value: null,
+        lost_reason: null,
+        assigned_to: "user-uuid",
+        notes: "Large party order for 200 students",
+        order_id: null,
+        metadata: {},
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        deleted_at: null,
+      };
+      expect(opp.title).toBe("KFC Party Order - ABC School");
+      expect(opp.stage).toBe("consulting");
+      expect(opp.expected_value).toBe(15000000);
+    });
+
+    it("should construct Opportunity with won data", () => {
+      const opp: Opportunity = {
+        id: "opp-uuid",
+        lead_id: null,
+        customer_id: "cust-uuid",
+        title: "Won deal",
+        stage: "won",
+        expected_value: 10000000,
+        expected_date: "2026-05-01",
+        actual_value: 12000000,
+        lost_reason: null,
+        assigned_to: null,
+        notes: null,
+        order_id: "order-uuid",
+        metadata: {},
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        deleted_at: null,
+      };
+      expect(opp.actual_value).toBe(12000000);
+      expect(opp.order_id).toBe("order-uuid");
+    });
+
+    it("should construct Opportunity with lost data", () => {
+      const opp: Opportunity = {
+        id: "opp-uuid",
+        lead_id: "lead-uuid",
+        customer_id: null,
+        title: "Lost deal",
+        stage: "lost",
+        expected_value: 5000000,
+        expected_date: null,
+        actual_value: null,
+        lost_reason: "Price too high",
+        assigned_to: null,
+        notes: null,
+        order_id: null,
+        metadata: {},
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        deleted_at: null,
+      };
+      expect(opp.lost_reason).toBe("Price too high");
+    });
+
+    it("should construct OpportunityWithRelations", () => {
+      const opp: OpportunityWithRelations = {
+        id: "opp-uuid",
+        lead_id: "lead-uuid",
+        customer_id: "cust-uuid",
+        title: "Test deal",
+        stage: "negotiating",
+        expected_value: 20000000,
+        expected_date: null,
+        actual_value: null,
+        lost_reason: null,
+        assigned_to: "user-uuid",
+        notes: null,
+        order_id: null,
+        metadata: {},
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        deleted_at: null,
+        lead: { id: "lead-uuid", full_name: "Test Lead", phone: "0901234567" },
+        customer: { id: "cust-uuid", full_name: "Test Customer", phone: "0909876543" },
+        assigned_user: { id: "user-uuid", name: "Admin", email: "admin@bigorders.vn" },
+      };
+      expect(opp.lead?.full_name).toBe("Test Lead");
+      expect(opp.customer?.full_name).toBe("Test Customer");
+      expect(opp.assigned_user?.name).toBe("Admin");
     });
   });
 
