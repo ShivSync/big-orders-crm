@@ -1,0 +1,100 @@
+{
+  "common": {
+    "appName": "Big Orders CRM",
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "delete": "Xóa",
+    "edit": "Sửa",
+    "create": "Tạo mới",
+    "search": "Tìm kiếm",
+    "filter": "Lọc",
+    "export": "Xuất",
+    "import": "Nhập",
+    "loading": "Đang tải...",
+    "noData": "Không có dữ liệu",
+    "confirm": "Xác nhận",
+    "back": "Quay lại",
+    "actions": "Thao tác",
+    "status": "Trạng thái",
+    "active": "Hoạt động",
+    "inactive": "Không hoạt động",
+    "all": "Tất cả",
+    "yes": "Có",
+    "no": "Không"
+  },
+  "nav": {
+    "dashboard": "Tổng quan",
+    "leads": "Khách hàng tiềm năng",
+    "pipeline": "Quy trình bán hàng",
+    "customers": "Khách hàng",
+    "organizations": "Tổ chức",
+    "orders": "Đơn hàng lớn",
+    "campaigns": "Chiến dịch",
+    "discovery": "Khám phá",
+    "reports": "Báo cáo",
+    "settings": "Cài đặt",
+    "users": "Người dùng",
+    "roles": "Vai trò",
+    "teams": "Nhóm"
+  },
+  "auth": {
+    "login": "Đăng nhập",
+    "logout": "Đăng xuất",
+    "email": "Email",
+    "password": "Mật khẩu",
+    "forgotPassword": "Quên mật khẩu?",
+    "resetPassword": "Đặt lại mật khẩu",
+    "resetPasswordDescription": "Nhập email để nhận liên kết đặt lại mật khẩu",
+    "sendResetLink": "Gửi liên kết",
+    "resetSent": "Đã gửi liên kết đặt lại mật khẩu",
+    "invalidCredentials": "Email hoặc mật khẩu không đúng",
+    "loginTitle": "Đăng nhập vào Big Orders CRM",
+    "loginSubtitle": "Quản lý đơn hàng lớn KFC Vietnam"
+  },
+  "users": {
+    "title": "Quản lý người dùng",
+    "createUser": "Tạo người dùng",
+    "editUser": "Sửa người dùng",
+    "name": "Họ tên",
+    "email": "Email",
+    "phone": "Số điện thoại",
+    "role": "Vai trò",
+    "region": "Khu vực",
+    "stores": "Cửa hàng",
+    "team": "Nhóm",
+    "lastAction": "Hành động cuối",
+    "deactivate": "Vô hiệu hóa",
+    "activate": "Kích hoạt"
+  },
+  "roles": {
+    "title": "Quản lý vai trò",
+    "createRole": "Tạo vai trò",
+    "editRole": "Sửa vai trò",
+    "permissions": "Quyền hạn",
+    "storeFilter": "Lọc cửa hàng",
+    "filterAll": "Tất cả",
+    "filterSome": "Một số",
+    "filterOne": "Một"
+  },
+  "teams": {
+    "title": "Quản lý nhóm",
+    "createTeam": "Tạo nhóm",
+    "editTeam": "Sửa nhóm",
+    "members": "Thành viên",
+    "region": "Khu vực"
+  },
+  "dashboard": {
+    "title": "Tổng quan",
+    "welcome": "Chào mừng",
+    "totalLeads": "Tổng khách hàng tiềm năng",
+    "activeOpportunities": "Cơ hội đang mở",
+    "pendingOrders": "Đơn hàng chờ xử lý",
+    "monthlyRevenue": "Doanh thu tháng"
+  },
+  "regions": {
+    "ALL": "Tất cả",
+    "N": "Miền Bắc",
+    "T": "Miền Trung",
+    "B": "Miền Nam"
+  }
+}

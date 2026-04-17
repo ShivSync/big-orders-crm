@@ -1,0 +1,100 @@
+{
+  "common": {
+    "appName": "Big Orders CRM",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "search": "Search",
+    "filter": "Filter",
+    "export": "Export",
+    "import": "Import",
+    "loading": "Loading...",
+    "noData": "No data",
+    "confirm": "Confirm",
+    "back": "Back",
+    "actions": "Actions",
+    "status": "Status",
+    "active": "Active",
+    "inactive": "Inactive",
+    "all": "All",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "leads": "Leads",
+    "pipeline": "Pipeline",
+    "customers": "Customers",
+    "organizations": "Organizations",
+    "orders": "Big Orders",
+    "campaigns": "Campaigns",
+    "discovery": "Discovery",
+    "reports": "Reports",
+    "settings": "Settings",
+    "users": "Users",
+    "roles": "Roles",
+    "teams": "Teams"
+  },
+  "auth": {
+    "login": "Log in",
+    "logout": "Log out",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot password?",
+    "resetPassword": "Reset Password",
+    "resetPasswordDescription": "Enter your email to receive a password reset link",
+    "sendResetLink": "Send Reset Link",
+    "resetSent": "Password reset link sent",
+    "invalidCredentials": "Invalid email or password",
+    "loginTitle": "Log in to Big Orders CRM",
+    "loginSubtitle": "KFC Vietnam Big Order Management"
+  },
+  "users": {
+    "title": "User Management",
+    "createUser": "Create User",
+    "editUser": "Edit User",
+    "name": "Full Name",
+    "email": "Email",
+    "phone": "Phone",
+    "role": "Role",
+    "region": "Region",
+    "stores": "Stores",
+    "team": "Team",
+    "lastAction": "Last Action",
+    "deactivate": "Deactivate",
+    "activate": "Activate"
+  },
+  "roles": {
+    "title": "Role Management",
+    "createRole": "Create Role",
+    "editRole": "Edit Role",
+    "permissions": "Permissions",
+    "storeFilter": "Store Filter",
+    "filterAll": "All",
+    "filterSome": "Some",
+    "filterOne": "One"
+  },
+  "teams": {
+    "title": "Team Management",
+    "createTeam": "Create Team",
+    "editTeam": "Edit Team",
+    "members": "Members",
+    "region": "Region"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome",
+    "totalLeads": "Total Leads",
+    "activeOpportunities": "Active Opportunities",
+    "pendingOrders": "Pending Orders",
+    "monthlyRevenue": "Monthly Revenue"
+  },
+  "regions": {
+    "ALL": "All Regions",
+    "N": "North",
+    "T": "Central",
+    "B": "South"
+  }
+}
