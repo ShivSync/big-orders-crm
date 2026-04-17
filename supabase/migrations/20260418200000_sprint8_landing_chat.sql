@@ -42,7 +42,11 @@ CREATE TABLE IF NOT EXISTS chat_sessions (
 ALTER TABLE chat_sessions ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "chat_sessions_public_insert" ON chat_sessions
-  FOR INSERT WITH CHECK (true);
+  FOR INSERT WITH CHECK (
+    status = 'active'
+    AND assigned_agent IS NULL
+    AND lead_id IS NULL
+  );
 
 CREATE POLICY "chat_sessions_public_select" ON chat_sessions
   FOR SELECT USING (
@@ -79,7 +83,7 @@ CREATE TABLE IF NOT EXISTS chat_messages (
 ALTER TABLE chat_messages ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "chat_messages_public_insert" ON chat_messages
-  FOR INSERT WITH CHECK (true);
+  FOR INSERT WITH CHECK (sender_type = 'visitor');
 
 CREATE POLICY "chat_messages_select" ON chat_messages
   FOR SELECT USING (

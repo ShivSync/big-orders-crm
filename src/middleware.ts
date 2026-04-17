@@ -13,7 +13,8 @@ export default async function middleware(request: NextRequest) {
     (locale) =>
       pathname.startsWith(`/${locale}/login`) ||
       pathname.startsWith(`/${locale}/reset-password`) ||
-      pathname.startsWith(`/${locale}/book-party`)
+      pathname === `/${locale}/book-party` ||
+      pathname.startsWith(`/${locale}/book-party/`)
   );
 
   // Apply i18n middleware first

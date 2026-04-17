@@ -21,6 +21,7 @@ export function ChatWidget() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [sessionId, setSessionId] = useState<string | null>(null);
+  const [visitorId, setVisitorId] = useState<string | null>(null);
   const [step, setStep] = useState<BotStep>("idle");
   const [sending, setSending] = useState(false);
   const [collected, setCollected] = useState<{ event_type?: string; guest_count?: string }>({});
@@ -52,6 +53,7 @@ export function ChatWidget() {
     if (res.ok) {
       const data = await res.json();
       setSessionId(data.session_id);
+      setVisitorId(data.visitor_id);
       setStep("greeting");
       addMessage("bot", t("greeting"));
 
@@ -75,7 +77,7 @@ export function ChatWidget() {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "message", session_id: sessionId, content: msg, step: "ask_event_type" }),
+        body: JSON.stringify({ action: "message", session_id: sessionId, visitor_id: visitorId, content: msg, step: "ask_event_type" }),
       });
       if (res.ok) {
         setTimeout(() => {
@@ -88,7 +90,7 @@ export function ChatWidget() {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "message", session_id: sessionId, content: msg, step: "ask_guest_count" }),
+        body: JSON.stringify({ action: "message", session_id: sessionId, visitor_id: visitorId, content: msg, step: "ask_guest_count" }),
       });
       if (res.ok) {
         setTimeout(() => {
@@ -109,6 +111,7 @@ export function ChatWidget() {
           body: JSON.stringify({
             action: "create_lead",
             session_id: sessionId,
+            visitor_id: visitorId,
             name,
             phone,
             event_type: collected.event_type,
@@ -126,7 +129,7 @@ export function ChatWidget() {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "message", session_id: sessionId, content: msg }),
+        body: JSON.stringify({ action: "message", session_id: sessionId, visitor_id: visitorId, content: msg }),
       });
       if (res.ok) {
         const data = await res.json();
@@ -156,7 +159,7 @@ export function ChatWidget() {
     await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "escalate", session_id: sessionId }),
+      body: JSON.stringify({ action: "escalate", session_id: sessionId, visitor_id: visitorId }),
     });
     addMessage("bot", t("escalated"));
     setStep("escalated");

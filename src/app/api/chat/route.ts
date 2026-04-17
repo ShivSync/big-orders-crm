@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 
 export async function POST(request: NextRequest) {
+  const ip = getClientIp(request.headers);
+  if (!checkRateLimit(`chat:${ip}`, 30, 60_000)) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
+
   const body = await request.json().catch(() => null);
   if (!body || !body.action) {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
@@ -11,9 +17,13 @@ export async function POST(request: NextRequest) {
 
   switch (body.action) {
     case "start": {
+      if (!checkRateLimit(`chat-start:${ip}`, 3, 60_000)) {
+        return NextResponse.json({ error: "Too many sessions" }, { status: 429 });
+      }
+
       const { data: session, error } = await supabase
         .from("chat_sessions")
-        .insert({ visitor_name: body.visitor_name || null })
+        .insert({ status: "active" })
         .select("id, visitor_id")
         .single();
 
@@ -32,18 +42,33 @@ export async function POST(request: NextRequest) {
     }
 
     case "message": {
-      if (!body.session_id || !body.content) {
-        return NextResponse.json({ error: "session_id and content required" }, { status: 400 });
+      if (!body.session_id || !body.content || !body.visitor_id) {
+        return NextResponse.json({ error: "session_id, visitor_id, and content required" }, { status: 400 });
       }
+
+      const { data: session } = await supabase
+        .from("chat_sessions")
+        .select("visitor_id, status")
+        .eq("id", body.session_id)
+        .single();
+
+      if (!session || session.visitor_id !== body.visitor_id) {
+        return NextResponse.json({ error: "Invalid session" }, { status: 403 });
+      }
+
+      if (session.status === "closed") {
+        return NextResponse.json({ error: "Session closed" }, { status: 400 });
+      }
+
+      const safeContent = String(body.content).slice(0, 2000);
 
       await supabase.from("chat_messages").insert({
         session_id: body.session_id,
         sender_type: "visitor",
-        content: body.content.slice(0, 2000),
-        metadata: body.metadata || {},
+        content: safeContent,
       });
 
-      const botReply = await getBotReply(supabase, body.session_id, body.content, body.step);
+      const botReply = await getBotReply(supabase, body.session_id, safeContent, body.step);
 
       if (botReply) {
         await supabase.from("chat_messages").insert({
@@ -58,8 +83,18 @@ export async function POST(request: NextRequest) {
     }
 
     case "escalate": {
-      if (!body.session_id) {
-        return NextResponse.json({ error: "session_id required" }, { status: 400 });
+      if (!body.session_id || !body.visitor_id) {
+        return NextResponse.json({ error: "session_id and visitor_id required" }, { status: 400 });
+      }
+
+      const { data: session } = await supabase
+        .from("chat_sessions")
+        .select("visitor_id")
+        .eq("id", body.session_id)
+        .single();
+
+      if (!session || session.visitor_id !== body.visitor_id) {
+        return NextResponse.json({ error: "Invalid session" }, { status: 403 });
       }
 
       await supabase
@@ -78,25 +113,46 @@ export async function POST(request: NextRequest) {
     }
 
     case "create_lead": {
-      if (!body.session_id || !body.name || !body.phone) {
-        return NextResponse.json({ error: "session_id, name, phone required" }, { status: 400 });
+      if (!body.session_id || !body.visitor_id || !body.name || !body.phone) {
+        return NextResponse.json({ error: "session_id, visitor_id, name, phone required" }, { status: 400 });
+      }
+
+      const { data: session } = await supabase
+        .from("chat_sessions")
+        .select("visitor_id, lead_id")
+        .eq("id", body.session_id)
+        .single();
+
+      if (!session || session.visitor_id !== body.visitor_id) {
+        return NextResponse.json({ error: "Invalid session" }, { status: 403 });
+      }
+
+      if (session.lead_id) {
+        return NextResponse.json({ error: "Lead already created for this session" }, { status: 409 });
+      }
+
+      const safeName = String(body.name).replace(/<[^>]*>/g, "").trim().slice(0, 200);
+      const safePhone = String(body.phone).replace(/[^0-9+\-() ]/g, "").slice(0, 20);
+
+      if (!safeName || safeName.length < 2 || !safePhone || safePhone.length < 8) {
+        return NextResponse.json({ error: "Invalid name or phone" }, { status: 400 });
       }
 
       const { data: lead, error } = await supabase
         .from("leads")
         .insert({
-          company_name: body.name.slice(0, 200),
-          phone: body.phone.slice(0, 20),
+          company_name: safeName,
+          phone: safePhone,
           lead_source: "chat_bot",
           stage: "new",
           notes: [
-            body.event_type ? `Event: ${body.event_type}` : null,
-            body.guest_count ? `Guests: ${body.guest_count}` : null,
+            body.event_type ? `Event: ${String(body.event_type).slice(0, 50)}` : null,
+            body.guest_count ? `Guests: ${String(body.guest_count).slice(0, 10)}` : null,
           ].filter(Boolean).join(" | "),
           metadata: {
             source_page: "chat",
             chat_session_id: body.session_id,
-            event_type: body.event_type || null,
+            event_type: typeof body.event_type === "string" ? body.event_type.slice(0, 50) : null,
             guest_count: Number(body.guest_count) || null,
           },
         })
@@ -109,7 +165,7 @@ export async function POST(request: NextRequest) {
 
       await supabase
         .from("chat_sessions")
-        .update({ lead_id: lead.id, visitor_name: body.name, visitor_phone: body.phone })
+        .update({ lead_id: lead.id, visitor_name: safeName, visitor_phone: safePhone })
         .eq("id", body.session_id);
 
       return NextResponse.json({ lead_id: lead.id });

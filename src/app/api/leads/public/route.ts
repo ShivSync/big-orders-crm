@@ -1,9 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/server";
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 
 const PHONE_RE = /^[0-9+\-() ]{8,20}$/;
+const VALID_EVENT_TYPES = ["birthday", "corporate", "school", "wedding", "other"];
 
 export async function POST(request: NextRequest) {
+  const ip = getClientIp(request.headers);
+  if (!checkRateLimit(`lead-public:${ip}`, 5, 60_000)) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
+
   const body = await request.json().catch(() => null);
   if (!body) {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
@@ -18,32 +25,34 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Valid phone number is required" }, { status: 400 });
   }
 
+  const safeEventType = typeof event_type === "string" && VALID_EVENT_TYPES.includes(event_type) ? event_type : null;
   const guestNum = Number(guest_count);
-  if (guest_count && (isNaN(guestNum) || guestNum < 1 || guestNum > 10000)) {
-    return NextResponse.json({ error: "Invalid guest count" }, { status: 400 });
-  }
+  const safeGuests = !isNaN(guestNum) && guestNum >= 1 && guestNum <= 10000 ? guestNum : null;
+  const safeDate = typeof preferred_date === "string" ? preferred_date.slice(0, 10) : null;
+  const safeNotes = typeof notes === "string" ? notes.slice(0, 1000) : "";
+  const safeName = name.replace(/<[^>]*>/g, "").trim().slice(0, 200);
 
   const supabase = await createServiceClient();
 
   const { data: lead, error } = await supabase
     .from("leads")
     .insert({
-      company_name: name.trim(),
+      company_name: safeName,
       phone: phone.trim(),
       lead_source: "web_app",
       stage: "new",
       notes: [
-        event_type ? `Event: ${event_type}` : null,
-        guestNum ? `Guests: ${guestNum}` : null,
-        preferred_date ? `Date: ${preferred_date}` : null,
-        notes ? `Notes: ${notes}` : null,
+        safeEventType ? `Event: ${safeEventType}` : null,
+        safeGuests ? `Guests: ${safeGuests}` : null,
+        safeDate ? `Date: ${safeDate}` : null,
+        safeNotes ? `Notes: ${safeNotes}` : null,
       ].filter(Boolean).join(" | "),
       metadata: {
         source_page: "book-party",
-        event_type: event_type || null,
-        guest_count: guestNum || null,
-        preferred_date: preferred_date || null,
-        store_id: store_id || null,
+        event_type: safeEventType,
+        guest_count: safeGuests,
+        preferred_date: safeDate,
+        store_id: typeof store_id === "string" ? store_id.slice(0, 50) : null,
       },
     })
     .select("id")
