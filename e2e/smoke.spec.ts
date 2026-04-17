@@ -12,6 +12,8 @@ test.describe("Smoke tests: all sprint pages load", () => {
     { name: "Users", path: "/vi/users" },
     { name: "Roles", path: "/vi/roles" },
     { name: "Teams", path: "/vi/teams" },
+    { name: "Discovery", path: "/vi/discovery" },
+    { name: "Settings", path: "/vi/settings" },
   ];
 
   for (const p of pages) {
