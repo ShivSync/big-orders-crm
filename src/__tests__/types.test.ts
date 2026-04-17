@@ -5,6 +5,9 @@ import type {
   IndividualCustomer, Organization, CustomerOrgLink,
   ContactType, OrganizationType, OrgSize,
   Opportunity, OpportunityStage, OpportunityWithRelations,
+  Order, OrderItem, OrderStatusHistory, OrderWithRelations,
+  OrderStatus, PaymentStatus, EventType, OrderSource,
+  MenuItem, MenuCategory, MenuItemWithCategory,
 } from "@/types/database";
 
 describe("Database types", () => {
@@ -282,6 +285,210 @@ describe("Database types", () => {
       expect(opp.lead?.full_name).toBe("Test Lead");
       expect(opp.customer?.full_name).toBe("Test Customer");
       expect(opp.assigned_user?.name).toBe("Admin");
+    });
+  });
+
+  describe("Order types", () => {
+    it("should accept valid order statuses", () => {
+      const statuses: OrderStatus[] = ["draft", "confirmed", "preparing", "ready", "fulfilled", "cancelled"];
+      expect(statuses).toHaveLength(6);
+    });
+
+    it("should accept valid payment statuses", () => {
+      const statuses: PaymentStatus[] = ["unpaid", "partial", "paid"];
+      expect(statuses).toHaveLength(3);
+    });
+
+    it("should accept valid event types", () => {
+      const types: EventType[] = ["birthday", "corporate", "school_event", "meeting", "custom"];
+      expect(types).toHaveLength(5);
+    });
+
+    it("should accept valid order sources", () => {
+      const sources: OrderSource[] = ["crm", "landing_page", "phone", "zalo", "facebook", "oms_migrated"];
+      expect(sources).toHaveLength(6);
+    });
+
+    it("should construct a valid Order object", () => {
+      const order: Order = {
+        id: "order-uuid",
+        order_number: "BO-2026-00001",
+        customer_id: "cust-uuid",
+        organization_id: null,
+        opportunity_id: null,
+        store_id: "store-uuid",
+        contact_name: "Nguyen Van A",
+        contact_phone: "+84912345678",
+        event_type: "birthday",
+        scheduled_date: "2026-06-15",
+        guest_count: 50,
+        subtotal: 5000000,
+        discount_pct: 10,
+        discount_amount: 500000,
+        total_value: 4500000,
+        status: "draft",
+        payment_status: "unpaid",
+        delivery_notes: "Deliver by 10am",
+        assigned_to: "user-uuid",
+        approved_by: null,
+        aloha_bill_id: null,
+        source: "crm",
+        notes: "Birthday party for 50 kids",
+        metadata: {},
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        deleted_at: null,
+      };
+      expect(order.order_number).toBe("BO-2026-00001");
+      expect(order.status).toBe("draft");
+      expect(order.total_value).toBe(4500000);
+      expect(order.event_type).toBe("birthday");
+    });
+
+    it("should construct a valid OrderItem with snapshot fields", () => {
+      const item: OrderItem = {
+        id: "item-uuid",
+        order_id: "order-uuid",
+        menu_item_id: "menu-uuid",
+        item_code: "CB-001",
+        name_vi: "Combo Bò 1 (5 người)",
+        name_en: "Beef Combo 1 (5 pax)",
+        quantity: 3,
+        unit_price: 399000,
+        line_total: 1197000,
+        special_requests: "Extra sauce",
+        created_at: new Date().toISOString(),
+      };
+      expect(item.item_code).toBe("CB-001");
+      expect(item.line_total).toBe(item.quantity * item.unit_price);
+      expect(item.name_vi).toBeTruthy();
+      expect(item.name_en).toBeTruthy();
+    });
+
+    it("should construct a valid OrderStatusHistory", () => {
+      const hist: OrderStatusHistory = {
+        id: "hist-uuid",
+        order_id: "order-uuid",
+        from_status: "draft",
+        to_status: "confirmed",
+        changed_by: "user-uuid",
+        notes: null,
+        created_at: new Date().toISOString(),
+      };
+      expect(hist.from_status).toBe("draft");
+      expect(hist.to_status).toBe("confirmed");
+    });
+
+    it("should construct OrderWithRelations", () => {
+      const order: OrderWithRelations = {
+        id: "order-uuid",
+        order_number: "BO-2026-00002",
+        customer_id: "cust-uuid",
+        organization_id: "org-uuid",
+        opportunity_id: null,
+        store_id: "store-uuid",
+        contact_name: "Test",
+        contact_phone: "0123456789",
+        event_type: "corporate",
+        scheduled_date: "2026-07-01",
+        guest_count: 100,
+        subtotal: 20000000,
+        discount_pct: 5,
+        discount_amount: 1000000,
+        total_value: 19000000,
+        status: "confirmed",
+        payment_status: "partial",
+        delivery_notes: null,
+        assigned_to: "user-uuid",
+        approved_by: "admin-uuid",
+        aloha_bill_id: "ALH-12345",
+        source: "phone",
+        notes: null,
+        metadata: {},
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        deleted_at: null,
+        customer: { id: "cust-uuid", full_name: "VIP Customer" },
+        organization: { id: "org-uuid", name_vi: "Công ty ABC", name_en: "ABC Company" },
+        store: { id: "store-uuid", name: "KFC Quan 1" },
+        assigned_user: { id: "user-uuid", name: "Sales Rep" },
+        approved_user: { id: "admin-uuid", name: "Manager" },
+      };
+      expect(order.customer?.full_name).toBe("VIP Customer");
+      expect(order.organization?.name_en).toBe("ABC Company");
+      expect(order.aloha_bill_id).toBe("ALH-12345");
+    });
+  });
+
+  describe("Menu types", () => {
+    it("should construct a valid MenuCategory", () => {
+      const cat: MenuCategory = {
+        id: "cat-uuid",
+        name_vi: "Combo Bò",
+        name_en: "Beef Combos",
+        slug: "combo_bo",
+        sort_order: 1,
+        active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      expect(cat.slug).toBe("combo_bo");
+    });
+
+    it("should construct a valid MenuItem with item_code and price", () => {
+      const item: MenuItem = {
+        id: "mi-uuid",
+        category_id: "cat-uuid",
+        item_code: "CB-001",
+        pos_name: "COMBO BO 1",
+        name_vi: "Combo Bò 1",
+        name_en: "Beef Combo 1",
+        description_vi: null,
+        description_en: null,
+        price: 399000,
+        components: "1x Burger + 2x Pepsi",
+        min_quantity: 1,
+        max_quantity: 9999,
+        active: true,
+        sort_order: 1,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      expect(item.item_code).toBe("CB-001");
+      expect(item.price).toBe(399000);
+      expect(item.price).toBeGreaterThan(0);
+    });
+
+    it("should construct MenuItemWithCategory", () => {
+      const item: MenuItemWithCategory = {
+        id: "mi-uuid",
+        category_id: "cat-uuid",
+        item_code: "AL-001",
+        pos_name: null,
+        name_vi: "Gà Rán 1 Miếng",
+        name_en: "Fried Chicken 1pc",
+        description_vi: null,
+        description_en: null,
+        price: 35000,
+        components: null,
+        min_quantity: 1,
+        max_quantity: 9999,
+        active: true,
+        sort_order: 1,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        category: {
+          id: "cat-uuid",
+          name_vi: "À La Carte",
+          name_en: "À La Carte",
+          slug: "alacard",
+          sort_order: 3,
+          active: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+      };
+      expect(item.category?.slug).toBe("alacard");
     });
   });
 

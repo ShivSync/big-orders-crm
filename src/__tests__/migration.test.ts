@@ -224,4 +224,117 @@ describe("Database migrations", () => {
       expect(sql).toContain("pipeline.delete");
     });
   });
+
+  describe("Sprint 5: Orders & Menu migration", () => {
+    const sql = readFileSync(join(migrationsDir, "20260417700000_sprint5_orders_menu.sql"), "utf-8");
+
+    it("should create menu_categories table", () => {
+      expect(sql).toContain("CREATE TABLE menu_categories");
+    });
+
+    it("should create menu_items table", () => {
+      expect(sql).toContain("CREATE TABLE menu_items");
+    });
+
+    it("should create orders table", () => {
+      expect(sql).toContain("CREATE TABLE orders");
+    });
+
+    it("should create order_items table with snapshot columns", () => {
+      expect(sql).toContain("CREATE TABLE order_items");
+      expect(sql).toMatch(/order_items[\s\S]*item_code text NOT NULL/);
+      expect(sql).toMatch(/order_items[\s\S]*name_vi text NOT NULL/);
+      expect(sql).toMatch(/order_items[\s\S]*name_en text NOT NULL/);
+      expect(sql).toMatch(/order_items[\s\S]*unit_price bigint NOT NULL/);
+    });
+
+    it("should create order_status_history table", () => {
+      expect(sql).toContain("CREATE TABLE order_status_history");
+    });
+
+    it("should have order_number UNIQUE constraint", () => {
+      expect(sql).toContain("order_number text NOT NULL UNIQUE");
+    });
+
+    it("should have status CHECK with 6 values", () => {
+      for (const s of ["draft", "confirmed", "preparing", "ready", "fulfilled", "cancelled"]) {
+        expect(sql).toContain(`'${s}'`);
+      }
+    });
+
+    it("should have payment_status CHECK with 3 values", () => {
+      for (const s of ["unpaid", "partial", "paid"]) {
+        expect(sql).toContain(`'${s}'`);
+      }
+    });
+
+    it("should have event_type CHECK with 5 values", () => {
+      for (const s of ["birthday", "corporate", "school_event", "meeting", "custom"]) {
+        expect(sql).toContain(`'${s}'`);
+      }
+    });
+
+    it("should have source CHECK with 6 values", () => {
+      for (const s of ["crm", "landing_page", "phone", "zalo", "facebook", "oms_migrated"]) {
+        expect(sql).toContain(`'${s}'`);
+      }
+    });
+
+    it("should enable RLS on all tables", () => {
+      expect(sql).toContain("ALTER TABLE menu_categories ENABLE ROW LEVEL SECURITY");
+      expect(sql).toContain("ALTER TABLE menu_items ENABLE ROW LEVEL SECURITY");
+      expect(sql).toContain("ALTER TABLE orders ENABLE ROW LEVEL SECURITY");
+      expect(sql).toContain("ALTER TABLE order_items ENABLE ROW LEVEL SECURITY");
+      expect(sql).toContain("ALTER TABLE order_status_history ENABLE ROW LEVEL SECURITY");
+    });
+
+    it("should have indexes on order_number, store_id, status, customer_id, scheduled_date", () => {
+      expect(sql).toContain("idx_orders_order_number");
+      expect(sql).toContain("idx_orders_store_id");
+      expect(sql).toContain("idx_orders_status");
+      expect(sql).toContain("idx_orders_customer_id");
+      expect(sql).toContain("idx_orders_scheduled_date");
+    });
+
+    it("should seed 3 menu categories", () => {
+      expect(sql).toContain("combo_bo");
+      expect(sql).toContain("combo_hde");
+      expect(sql).toContain("alacard");
+    });
+
+    it("should seed menu items with item_code pattern CB-, CH-, AL-", () => {
+      expect(sql).toContain("CB-001");
+      expect(sql).toContain("CB-021");
+      expect(sql).toContain("CH-001");
+      expect(sql).toContain("CH-024");
+      expect(sql).toContain("AL-001");
+      expect(sql).toContain("AL-062");
+    });
+
+    it("should have all menu item prices > 0", () => {
+      const priceMatches = sql.matchAll(/,\s*(\d+),\s*(?:'[^']*'|NULL),\s*\d+\)/g);
+      for (const m of priceMatches) {
+        expect(parseInt(m[1])).toBeGreaterThan(0);
+      }
+    });
+
+    it("should seed orders permissions", () => {
+      expect(sql).toContain("orders.view");
+      expect(sql).toContain("orders.create");
+      expect(sql).toContain("orders.edit");
+      expect(sql).toContain("orders.delete");
+      expect(sql).toContain("orders.approve");
+    });
+
+    it("should have RLS policies with orders permission checks", () => {
+      expect(sql).toContain("orders_select");
+      expect(sql).toContain("orders_insert");
+      expect(sql).toContain("orders_update");
+      expect(sql).toContain("orders_delete");
+    });
+
+    it("should have soft delete on orders", () => {
+      expect(sql).toMatch(/orders[\s\S]*deleted_at/);
+    });
+  });
 });

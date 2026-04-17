@@ -118,6 +118,84 @@ or
 
 ---
 
+### POST /api/orders
+Create a new big order with items.
+
+**Permissions:** `orders.create`
+
+**Validation:**
+- `contact_name`, `contact_phone`, `store_id`, `scheduled_date` required
+- `items` array required (at least 1 item)
+- All `menu_item_id` references must exist and be active
+- `event_type` must be: birthday, corporate, school_event, meeting, custom
+- `source` must be: crm, landing_page, phone, zalo, facebook, oms_migrated
+- Referenced `customer_id`, `organization_id`, `assigned_to` validated if provided
+- discount_pct > 15% or total_value > 50M VND → order created as `draft` (needs approval)
+
+**Body:**
+```json
+{
+  "contact_name": "Nguyen Van A",
+  "contact_phone": "+84912345678",
+  "store_id": "uuid",
+  "scheduled_date": "2026-06-15",
+  "event_type": "birthday",
+  "source": "crm",
+  "guest_count": 50,
+  "customer_id": "uuid (optional)",
+  "organization_id": "uuid (optional)",
+  "assigned_to": "uuid (optional)",
+  "discount_pct": 10,
+  "delivery_notes": "Deliver by 10am",
+  "items": [
+    { "menu_item_id": "uuid", "quantity": 3, "special_requests": "Extra sauce" }
+  ]
+}
+```
+
+**Response:** `{ "data": { ... }, "needs_approval": false }`
+
+---
+
+### PATCH /api/orders/{id}/status
+Change an order's status.
+
+**Permissions:** `orders.edit`
+
+**Valid transitions:**
+- draft → confirmed, cancelled
+- confirmed → preparing, cancelled
+- preparing → ready, cancelled
+- ready → fulfilled, cancelled
+- fulfilled/cancelled → (no transitions)
+
+**Validation:**
+- `cancelled` requires `notes` (reason)
+- `fulfilled` updates customer's `total_revenue`, `order_count`, `last_order_date`
+- `preparing` can include `aloha_bill_id`
+
+**Body:**
+```json
+{
+  "status": "confirmed",
+  "notes": "Optional notes",
+  "aloha_bill_id": "ALH-12345 (optional, for preparing)"
+}
+```
+
+**Response:** `{ "success": true }`
+
+---
+
+### GET /api/menu
+Fetch all active menu categories and items.
+
+**Permissions:** Authenticated (any user)
+
+**Response:** `{ "categories": [...], "items": [...] }`
+
+---
+
 ## Error Responses
 
 All errors follow this format:

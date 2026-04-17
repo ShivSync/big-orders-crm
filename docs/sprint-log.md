@@ -95,6 +95,46 @@ Each sprint includes: DB migration, UI pages, API routes, i18n keys, tests, and 
 
 ---
 
+## Sprint 5: Big Orders & Menu Management
+
+**Status:** DONE | **Commit:** (pending)
+
+**Built:**
+- 5 tables: `menu_categories`, `menu_items`, `orders`, `order_items`, `order_status_history`
+- 3 menu categories seeded: combo_bo (21 items), combo_hde (24 items), alacard (62 items) = 107 total
+- Menu items with POS codes, bilingual names, VND prices (incl. 8% VAT), component breakdown
+- Order number auto-generation: "BO-YYYY-NNNNN" via sequence
+- Order status lifecycle: draft → confirmed → preparing → ready → fulfilled → cancelled
+- Payment status: unpaid / partial / paid
+- Event types: birthday, corporate, school_event, meeting, custom
+- Sources: crm, landing_page, phone, zalo, facebook, oms_migrated
+- Price snapshot: order_items store price at creation time, not current menu price
+- Discount rules: >15% requires approval, >50M VND requires approval
+- Fulfilled orders update customer revenue stats
+- Cancellation requires notes
+- `/orders` list page with status/store filters, search, stats cards
+- `/orders/new` 4-step creation wizard (customer → menu → review → confirm)
+- `/orders/[id]` detail page with status pipeline, items table, status history, payment toggle, Aloha bill ID
+- Server-side API routes: `POST /api/orders`, `PATCH /api/orders/[id]/status`, `GET /api/menu`
+- 60+ i18n keys (orders + menu sections, both languages)
+- Order permissions seeded: orders.view, orders.create, orders.edit, orders.delete, orders.approve + menu.view, menu.edit
+- RLS on all 5 tables with permission checks
+- 138 tests passing (up from 103)
+
+**Security (Codex Review #4):** Migration `20260417800000_sprint5_security_fixes.sql`
+- CRITICAL-1: Client-side Supabase mutations (payment, aloha) → server-side `PATCH /api/orders/[id]`
+- CRITICAL-2: Store-scoping RLS gap → deferred to Sprint 11 (consistent with all prior tables)
+- CRITICAL-3: Missing `opportunity_id` validation → added existence check
+- CRITICAL-4: No `payment_status` allowlist → added validation
+- HIGH-1: `approved_by` set without `orders.approve` check → approval permission enforced
+- HIGH-2: Non-atomic order creation → orphaned order cleanup on items failure
+- MEDIUM-1: `entity_type: "opportunity"` bug → fixed to `"order"`
+- MEDIUM-2: No phone format validation → regex added
+- MEDIUM-3: Past dates accepted → server-side date validation added
+- Permission grants: omni_head gets orders.approve; big_order_manager/sales get orders CRUD; rgm/area_manager get orders.view
+
+---
+
 ## Upcoming Sprints
 
 | Sprint | Name | Key Deliverables |

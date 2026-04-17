@@ -4,7 +4,7 @@
 
 PostgreSQL via Supabase self-hosted on EC2. All tables have RLS enabled, soft delete via `deleted_at`, and `updated_at` triggers.
 
-## Tables (19 total as of Sprint 4)
+## Tables (24 total as of Sprint 5)
 
 ### Sprint 1: Foundation (13 tables)
 
@@ -49,6 +49,22 @@ PostgreSQL via Supabase self-hosted on EC2. All tables have RLS enabled, soft de
 
 **Opportunity stages:** new → consulting → quoted → negotiating → won/lost
 
+### Sprint 5: Orders & Menu (5 tables)
+
+| Table | Purpose |
+|-------|---------|
+| `menu_categories` | Menu category groupings (combo_bo, combo_hde, alacard) |
+| `menu_items` | Menu items with POS codes, bilingual names, VND prices (107 seeded) |
+| `orders` | Big orders with status lifecycle, discount, approval |
+| `order_items` | Order line items with price snapshot at creation time |
+| `order_status_history` | Audit trail for order status changes |
+
+**Order statuses:** draft → confirmed → preparing → ready → fulfilled / cancelled
+**Payment statuses:** unpaid / partial / paid
+**Event types:** birthday, corporate, school_event, meeting, custom
+**Sources:** crm, landing_page, phone, zalo, facebook, oms_migrated
+**Business rules:** discount >15% or total >50M VND → requires approval
+
 ## RLS Pattern
 
 Every table follows this pattern:
@@ -85,6 +101,7 @@ SQL files in `supabase/migrations/`. Applied in order:
 | `20260417400000_sprint3_security_fixes.sql` | 3 | RLS hardening (Codex review) |
 | `20260417500000_sprint4_pipeline.sql` | 4 | opportunities, pipeline permissions |
 | `20260417600000_sprint4_security_fixes.sql` | 4 | RLS fix: edit/delete separation, unique index |
+| `20260417700000_sprint5_orders_menu.sql` | 5 | menu_categories, menu_items (107 seed), orders, order_items, order_status_history, permissions |
 
 ### Running Migrations
 

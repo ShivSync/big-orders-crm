@@ -95,6 +95,8 @@ SQL files in `supabase/migrations/`. Applied migrations:
 | 20260417200000_security_fixes.sql | 2.5 | APPLIED (partial — ownership errors on Sprint 1 tables, policies OK) |
 | 20260417300000_sprint3_customers_orgs.sql | 3 | APPLIED |
 | 20260417400000_sprint3_security_fixes.sql | 3 | APPLIED |
+| 20260417700000_sprint5_orders_menu.sql | 5 | PENDING |
+| 20260417800000_sprint5_security_fixes.sql | 5 | PENDING |
 
 ---
 
@@ -106,8 +108,9 @@ SQL files in `supabase/migrations/`. Applied migrations:
 | 2 | Lead Management | DONE |
 | 2.5 | Security Hardening (Codex review) | DONE |
 | 3 | Customers & Organizations | DONE |
-| 4 | Sales Pipeline & Opportunities | IN PROGRESS |
-| 5-12 | Orders → Settings/Polish | QUEUED (OVE) |
+| 4 | Sales Pipeline & Opportunities | DONE |
+| 5 | Big Orders & Menu | DONE |
+| 6-12 | Campaigns → Settings/Polish | QUEUED (OVE) |
 
 ## Deferred Items
 - PII masking (mask_phone/mask_email on customer/org pages) → Sprint 11

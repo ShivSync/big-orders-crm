@@ -269,3 +269,109 @@ export interface OpportunityWithRelations extends Opportunity {
   customer?: Pick<IndividualCustomer, "id" | "full_name"> | null;
   assigned_user?: Pick<User, "id" | "name"> | null;
 }
+
+// Order & Menu Types
+export type OrderStatus = "draft" | "confirmed" | "preparing" | "ready" | "fulfilled" | "cancelled";
+export type PaymentStatus = "unpaid" | "partial" | "paid";
+export type EventType = "birthday" | "corporate" | "school_event" | "meeting" | "custom";
+export type OrderSource = "crm" | "landing_page" | "phone" | "zalo" | "facebook" | "oms_migrated";
+
+export interface MenuCategory {
+  id: string;
+  name_vi: string;
+  name_en: string;
+  slug: string;
+  sort_order: number;
+  active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface MenuItem {
+  id: string;
+  category_id: string;
+  item_code: string;
+  pos_name: string | null;
+  name_vi: string;
+  name_en: string;
+  description_vi: string | null;
+  description_en: string | null;
+  price: number;
+  components: string | null;
+  min_quantity: number;
+  max_quantity: number;
+  active: boolean;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface MenuItemWithCategory extends MenuItem {
+  category?: MenuCategory | null;
+}
+
+export interface Order {
+  id: string;
+  order_number: string;
+  customer_id: string | null;
+  organization_id: string | null;
+  opportunity_id: string | null;
+  store_id: string;
+  contact_name: string;
+  contact_phone: string;
+  event_type: EventType;
+  scheduled_date: string;
+  guest_count: number | null;
+  subtotal: number;
+  discount_pct: number;
+  discount_amount: number;
+  total_value: number;
+  status: OrderStatus;
+  payment_status: PaymentStatus;
+  delivery_notes: string | null;
+  assigned_to: string | null;
+  approved_by: string | null;
+  aloha_bill_id: string | null;
+  source: OrderSource;
+  notes: string | null;
+  metadata: Record<string, unknown>;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+}
+
+export interface OrderWithRelations extends Order {
+  customer?: Pick<IndividualCustomer, "id" | "full_name"> | null;
+  organization?: Pick<Organization, "id" | "name_vi" | "name_en"> | null;
+  opportunity?: Pick<Opportunity, "id" | "title"> | null;
+  store?: Pick<Store, "id" | "name"> | null;
+  assigned_user?: Pick<User, "id" | "name"> | null;
+  approved_user?: Pick<User, "id" | "name"> | null;
+  items?: OrderItem[];
+  status_history?: OrderStatusHistory[];
+}
+
+export interface OrderItem {
+  id: string;
+  order_id: string;
+  menu_item_id: string | null;
+  item_code: string;
+  name_vi: string;
+  name_en: string;
+  quantity: number;
+  unit_price: number;
+  line_total: number;
+  special_requests: string | null;
+  created_at: string;
+}
+
+export interface OrderStatusHistory {
+  id: string;
+  order_id: string;
+  from_status: string | null;
+  to_status: string;
+  changed_by: string;
+  notes: string | null;
+  created_at: string;
+  changer?: Pick<User, "id" | "name"> | null;
+}

@@ -84,6 +84,48 @@ describe("i18n completeness", () => {
     }
   });
 
+  it("should have orders section in both languages with matching keys", () => {
+    expect(en).toHaveProperty("orders");
+    expect(vi).toHaveProperty("orders");
+    expect(Object.keys(en.orders).length).toBeGreaterThan(0);
+    expect(Object.keys(en.orders).length).toBe(Object.keys(vi.orders).length);
+  });
+
+  it("should have menu section in both languages with matching keys", () => {
+    expect(en).toHaveProperty("menu");
+    expect(vi).toHaveProperty("menu");
+    expect(Object.keys(en.menu).length).toBeGreaterThan(0);
+    expect(Object.keys(en.menu).length).toBe(Object.keys(vi.menu).length);
+  });
+
+  it("should have all 6 order status labels translated", () => {
+    for (const key of ["statusDraft", "statusConfirmed", "statusPreparing", "statusReady", "statusFulfilled", "statusCancelled"]) {
+      expect(en.orders).toHaveProperty(key);
+      expect(vi.orders).toHaveProperty(key);
+    }
+  });
+
+  it("should have all 5 event type labels translated", () => {
+    for (const key of ["eventBirthday", "eventCorporate", "eventSchool", "eventMeeting", "eventCustom"]) {
+      expect(en.orders).toHaveProperty(key);
+      expect(vi.orders).toHaveProperty(key);
+    }
+  });
+
+  it("should have all 3 payment status labels translated", () => {
+    for (const key of ["paymentUnpaid", "paymentPartial", "paymentPaid"]) {
+      expect(en.orders).toHaveProperty(key);
+      expect(vi.orders).toHaveProperty(key);
+    }
+  });
+
+  it("should have all 6 source labels translated", () => {
+    for (const key of ["sourceCrm", "sourceLandingPage", "sourcePhone", "sourceZalo", "sourceFacebook", "sourceOmsMigrated"]) {
+      expect(en.orders).toHaveProperty(key);
+      expect(vi.orders).toHaveProperty(key);
+    }
+  });
+
   it("should have no empty string values", () => {
     const emptyEn = enKeys.filter((k) => {
       const parts = k.split(".");

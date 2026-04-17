@@ -1,6 +1,3 @@
-sprint-03-customers-orgs.md
-sprint-04-pipeline.md
-sprint-05-orders-menu.md
 sprint-06-campaigns-events.md
 sprint-07-discovery.md
 sprint-08-landing-chat.md
