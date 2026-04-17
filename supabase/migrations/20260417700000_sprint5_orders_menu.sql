@@ -72,7 +72,7 @@ CREATE TABLE orders (
   customer_id uuid REFERENCES individual_customers(id),
   organization_id uuid REFERENCES organizations(id),
   opportunity_id uuid REFERENCES opportunities(id),
-  store_id uuid NOT NULL REFERENCES stores(id),
+  store_id text NOT NULL REFERENCES stores(id),
   contact_name text NOT NULL,
   contact_phone text NOT NULL,
   event_type text NOT NULL DEFAULT 'custom' CHECK (event_type IN ('birthday', 'corporate', 'school_event', 'meeting', 'custom')),
