@@ -126,7 +126,7 @@ SQL files in `supabase/migrations/`. Applied migrations:
 | 8 | Landing Page & Live Chat | DONE — commit `52992a5` |
 | 9 | Channel Integrations + Help | DONE — commit `a05bd198` |
 | 10 | OMS Integration | DONE — commit `32cff8f` |
-| 11 | Reports & Dashboard + UX Polish | IN PROGRESS |
+| 11 | Reports & Dashboard + UX Polish | DONE — commit `5557d6a` |
 | 12 | Settings & Final Polish | QUEUED (OVE) |
 
 ## Deferred Items
