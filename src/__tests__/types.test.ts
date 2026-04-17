@@ -8,6 +8,9 @@ import type {
   Order, OrderItem, OrderStatusHistory, OrderWithRelations,
   OrderStatus, PaymentStatus, EventType, OrderSource,
   MenuItem, MenuCategory, MenuItemWithCategory,
+  Campaign, CampaignRecipient, RecurringEvent,
+  CampaignType, CampaignStatus, RecipientStatus, RecurringEventType,
+  SegmentFilters, CampaignWithRelations,
 } from "@/types/database";
 
 describe("Database types", () => {
@@ -489,6 +492,124 @@ describe("Database types", () => {
         },
       };
       expect(item.category?.slug).toBe("alacard");
+    });
+  });
+
+  describe("Campaign types", () => {
+    it("should accept valid campaign statuses", () => {
+      const statuses: CampaignStatus[] = ["draft", "scheduled", "sending", "sent", "cancelled"];
+      expect(statuses).toHaveLength(5);
+    });
+
+    it("should accept valid campaign types", () => {
+      const types: CampaignType[] = ["sms", "email"];
+      expect(types).toHaveLength(2);
+    });
+
+    it("should accept valid recipient statuses", () => {
+      const statuses: RecipientStatus[] = ["pending", "sent", "delivered", "failed", "bounced"];
+      expect(statuses).toHaveLength(5);
+    });
+
+    it("should accept valid recurring event types", () => {
+      const types: RecurringEventType[] = ["birthday", "company_anniversary", "children_day", "custom"];
+      expect(types).toHaveLength(4);
+    });
+
+    it("should construct a valid Campaign with segment_filters as jsonb", () => {
+      const campaign: Campaign = {
+        id: "camp-uuid",
+        name: "Birthday Promo Q2",
+        campaign_type: "email",
+        segment_filters: { customer_type: ["parent"], city: ["Ho Chi Minh City"], min_revenue: 1000000 },
+        subject: "Special Birthday Offer!",
+        template: "Dear {{customer_name}}, enjoy your birthday at {{store_name}}!",
+        status: "draft",
+        scheduled_at: null,
+        sent_at: null,
+        sent_count: 0,
+        delivered_count: 0,
+        failed_count: 0,
+        created_by: "user-uuid",
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        deleted_at: null,
+      };
+      expect(campaign.name).toBe("Birthday Promo Q2");
+      expect(campaign.campaign_type).toBe("email");
+      expect(campaign.segment_filters.customer_type).toContain("parent");
+    });
+
+    it("should construct a valid CampaignRecipient with status tracking", () => {
+      const recipient: CampaignRecipient = {
+        id: "recip-uuid",
+        campaign_id: "camp-uuid",
+        customer_id: "cust-uuid",
+        channel: "email",
+        destination: "test@example.com",
+        status: "delivered",
+        sent_at: new Date().toISOString(),
+        error: null,
+        created_at: new Date().toISOString(),
+      };
+      expect(recipient.status).toBe("delivered");
+      expect(recipient.destination).toContain("@");
+    });
+
+    it("should construct a valid RecurringEvent", () => {
+      const event: RecurringEvent = {
+        id: "event-uuid",
+        customer_id: "cust-uuid",
+        event_type: "birthday",
+        event_name: "Customer Birthday",
+        event_date: "2026-06-15",
+        reminder_days_before: 30,
+        last_reminded_at: null,
+        active: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        deleted_at: null,
+      };
+      expect(event.event_type).toBe("birthday");
+      expect(event.reminder_days_before).toBe(30);
+    });
+
+    it("should construct SegmentFilters with all optional fields", () => {
+      const filters: SegmentFilters = {
+        customer_type: ["parent", "employee"],
+        city: ["Ho Chi Minh City"],
+        store_id: ["store-1"],
+        min_revenue: 500000,
+        max_revenue: 50000000,
+        last_order_before: "2026-01-01",
+        last_order_after: "2025-06-01",
+      };
+      expect(filters.customer_type).toHaveLength(2);
+      expect(filters.min_revenue).toBe(500000);
+    });
+
+    it("should construct CampaignWithRelations", () => {
+      const campaign: CampaignWithRelations = {
+        id: "camp-uuid",
+        name: "Test Campaign",
+        campaign_type: "sms",
+        segment_filters: {},
+        subject: null,
+        template: "Hi {{customer_name}}!",
+        status: "sent",
+        scheduled_at: null,
+        sent_at: new Date().toISOString(),
+        sent_count: 50,
+        delivered_count: 48,
+        failed_count: 2,
+        created_by: "user-uuid",
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        deleted_at: null,
+        creator: { id: "user-uuid", name: "Marketing Manager", email: "marketing@kfc.vn" },
+      };
+      expect(campaign.creator?.name).toBe("Marketing Manager");
+      expect(campaign.delivered_count).toBe(48);
     });
   });
 

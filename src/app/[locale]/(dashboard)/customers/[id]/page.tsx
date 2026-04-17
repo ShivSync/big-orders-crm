@@ -22,11 +22,12 @@ import {
 } from "lucide-react";
 import type {
   IndividualCustomer, ContactType, Store, User, Activity, ActivityType,
-  Organization, CustomerOrgLink, Gender,
+  Organization, CustomerOrgLink, Gender, RecurringEvent, RecurringEventType,
 } from "@/types/database";
 
 const CONTACT_TYPES: ContactType[] = ["parent", "employee", "teacher", "event_organizer", "other"];
 const ACTIVITY_TYPES: ActivityType[] = ["call", "email", "meeting", "note", "sms"];
+const EVENT_TYPES: RecurringEventType[] = ["birthday", "company_anniversary", "children_day", "custom"];
 
 const activityIcons: Record<ActivityType, typeof PhoneCall> = {
   call: PhoneCall, email: Mail, meeting: Video, note: StickyNote, sms: Send, system: Settings2,
@@ -36,6 +37,7 @@ export default function CustomerDetailPage() {
   const { id } = useParams<{ id: string }>();
   const t = useTranslations("customers");
   const tLeads = useTranslations("leads");
+  const tEvents = useTranslations("events");
   const tCommon = useTranslations("common");
   const locale = useLocale();
   const router = useRouter();
@@ -46,14 +48,16 @@ export default function CustomerDetailPage() {
   const [activities, setActivities] = useState<(Activity & { creator?: Pick<User, "id" | "name" | "email"> | null })[]>([]);
   const [orgLinks, setOrgLinks] = useState<(CustomerOrgLink & { organization?: Organization })[]>([]);
   const [allOrgs, setAllOrgs] = useState<Organization[]>([]);
+  const [recurringEvents, setRecurringEvents] = useState<RecurringEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [activityDialogOpen, setActivityDialogOpen] = useState(false);
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
+  const [eventDialogOpen, setEventDialogOpen] = useState(false);
   const [editData, setEditData] = useState<Partial<IndividualCustomer>>({});
 
   const loadData = useCallback(async () => {
-    const [custRes, storesRes, activitiesRes, linksRes, orgsRes] = await Promise.all([
+    const [custRes, storesRes, activitiesRes, linksRes, orgsRes, eventsRes] = await Promise.all([
       supabase.from("individual_customers").select("*").eq("id", id).single(),
       supabase.from("stores").select("*").eq("active", true),
       supabase.from("activities")
@@ -65,6 +69,11 @@ export default function CustomerDetailPage() {
         .select("*, organization:organizations(*)")
         .eq("individual_id", id),
       supabase.from("organizations").select("*").is("deleted_at", null),
+      supabase.from("recurring_events")
+        .select("*")
+        .eq("customer_id", id)
+        .is("deleted_at", null)
+        .order("event_date"),
     ]);
 
     if (custRes.data) {
@@ -75,6 +84,7 @@ export default function CustomerDetailPage() {
     setActivities(activitiesRes.data ?? []);
     setOrgLinks(linksRes.data ?? []);
     setAllOrgs(orgsRes.data ?? []);
+    setRecurringEvents(eventsRes.data ?? []);
     setLoading(false);
   }, [id]);
 
@@ -157,6 +167,42 @@ export default function CustomerDetailPage() {
     await supabase.from("customer_org_links").delete().eq("id", linkId);
     loadData();
   }
+
+  async function handleAddEvent(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const form = new FormData(e.currentTarget);
+    const res = await fetch("/api/recurring-events", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        customer_id: id,
+        event_type: form.get("event_type") as string,
+        event_name: form.get("event_name") as string,
+        event_date: form.get("event_date") as string,
+        reminder_days_before: Number(form.get("reminder_days_before")) || 30,
+      }),
+    });
+    if (res.ok) {
+      setEventDialogOpen(false);
+      loadData();
+    }
+  }
+
+  async function handleDeleteEvent(eventId: string) {
+    if (!confirm(tEvents("confirmDelete"))) return;
+    await fetch(`/api/recurring-events/${eventId}`, { method: "DELETE" });
+    loadData();
+  }
+
+  const eventTypeLabel = (et: RecurringEventType) => {
+    const map: Record<RecurringEventType, string> = {
+      birthday: "typeBirthday",
+      company_anniversary: "typeCompanyAnniversary",
+      children_day: "typeChildrenDay",
+      custom: "typeCustom",
+    };
+    return tEvents(map[et]);
+  };
 
   const contactTypeLabel = (ct: ContactType) => {
     const map: Record<ContactType, string> = {
@@ -362,6 +408,83 @@ export default function CustomerDetailPage() {
                     <span>{t("createdAt")}: {new Date(customer.created_at).toLocaleDateString(loc, dateOpts)}</span>
                     <span>{t("updatedAt")}: {new Date(customer.updated_at).toLocaleDateString(loc, dateOpts)}</span>
                   </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Recurring Events */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-base">{tEvents("title")}</CardTitle>
+                <Dialog open={eventDialogOpen} onOpenChange={setEventDialogOpen}>
+                  <DialogTrigger className="inline-flex items-center justify-center rounded-md border px-3 py-1.5 text-xs font-medium hover:bg-gray-50">
+                    <Plus className="h-3 w-3 mr-1" />
+                    {tEvents("addEvent")}
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader><DialogTitle>{tEvents("addEvent")}</DialogTitle></DialogHeader>
+                    <form onSubmit={handleAddEvent} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>{tEvents("eventType")}</Label>
+                        <Select name="event_type" defaultValue="custom">
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            {EVENT_TYPES.map((et) => (
+                              <SelectItem key={et} value={et}>{eventTypeLabel(et)}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>{tEvents("eventName")}</Label>
+                        <Input name="event_name" required />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>{tEvents("eventDate")}</Label>
+                        <Input name="event_date" type="date" required />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>{tEvents("reminderDays")}</Label>
+                        <Input name="reminder_days_before" type="number" defaultValue={30} min={1} max={365} />
+                      </div>
+                      <div className="flex justify-end gap-2">
+                        <Button type="button" variant="outline" onClick={() => setEventDialogOpen(false)}>{tCommon("cancel")}</Button>
+                        <Button type="submit" className="bg-red-600 hover:bg-red-700">{tCommon("save")}</Button>
+                      </div>
+                    </form>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {recurringEvents.length === 0 ? (
+                <p className="text-sm text-gray-400 text-center py-4">{tEvents("noEvents")}</p>
+              ) : (
+                <div className="space-y-3">
+                  {recurringEvents.map((evt) => (
+                    <div key={evt.id} className="flex items-center justify-between p-3 rounded-lg border">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <Calendar className="h-4 w-4 text-gray-400" />
+                          <p className="text-sm font-medium">{evt.event_name}</p>
+                          <Badge variant="secondary" className="text-xs">{eventTypeLabel(evt.event_type)}</Badge>
+                          {!evt.active && <Badge variant="outline" className="text-xs text-gray-400">{tEvents("inactive")}</Badge>}
+                        </div>
+                        <div className="flex items-center gap-4 mt-1 text-xs text-gray-500">
+                          <span>{tEvents("eventDate")}: {new Date(evt.event_date).toLocaleDateString(loc, dateOpts)}</span>
+                          <span>{tEvents("reminderDays")}: {evt.reminder_days_before}d</span>
+                          {evt.last_reminded_at && (
+                            <span>{tEvents("lastReminded")}: {new Date(evt.last_reminded_at).toLocaleDateString(loc, dateOpts)}</span>
+                          )}
+                        </div>
+                      </div>
+                      <Button variant="ghost" size="sm" className="text-red-500" onClick={() => handleDeleteEvent(evt.id)}>
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  ))}
                 </div>
               )}
             </CardContent>

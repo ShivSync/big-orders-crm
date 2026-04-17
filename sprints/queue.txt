@@ -1,4 +1,3 @@
-sprint-06-campaigns-events.md
 sprint-07-discovery.md
 sprint-08-landing-chat.md
 sprint-09-channels.md

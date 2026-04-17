@@ -135,12 +135,42 @@ Each sprint includes: DB migration, UI pages, API routes, i18n keys, tests, and 
 
 ---
 
+## Sprint 6: Campaigns & Recurring Events
+
+**Status:** DONE | **Commit:** (pending)
+
+**Built:**
+- 3 tables: `campaigns`, `campaign_recipients`, `recurring_events`
+- Campaign types: sms, email
+- Campaign status lifecycle: draft → scheduled → sending → sent / cancelled
+- Recipient statuses: pending → sent → delivered / failed / bounced
+- Segment builder: filter customers by type, city, store, revenue band, last order date
+- Template variables: {{customer_name}}, {{store_name}}, {{event_date}}
+- Recurring event types: birthday, company_anniversary, children_day, custom
+- `/campaigns` list page with status/type filters, stats cards
+- `/campaigns/[id]` detail page with segment builder, template editor, recipient list, delivery stats bar
+- Customer detail page: recurring events section with add/delete
+- Server-side API routes: `POST /api/campaigns`, `PATCH /api/campaigns/[id]`, `POST /api/campaigns/[id]/send`, `GET/POST /api/campaigns/[id]/recipients`, `POST /api/campaigns/segment`, `POST /api/recurring-events`, `PATCH/DELETE /api/recurring-events/[id]`
+- 60+ i18n keys (campaigns + events sections, both languages)
+- Campaign permissions seeded: campaigns.view, campaigns.create, campaigns.edit, campaigns.delete, campaigns.send
+- Event permissions seeded: events.view, events.create, events.edit, events.delete
+- RLS on all 3 tables with permission checks
+- 169 tests passing (up from 138)
+
+**Security (Codex Review #5):** Migration `20260417950000_sprint6_security_fixes.sql`
+- HIGH-1: Segment endpoint missing permission check → added campaigns.view check + stripped PII
+- HIGH-2: Recipients derived from client-supplied destinations → server-side DB lookup by customer IDs
+- HIGH-3: Campaign IDOR → by design, campaigns are team-shared (consistent with leads/orders)
+- HIGH-4: recurring_events RLS used campaigns.* slugs → fixed to events.* slugs
+- MEDIUM-1: Customer detail client-side mutations → deferred (pre-existing, all sprints)
+- MEDIUM-2: Customer detail PII reads → deferred (Sprint 11)
+
+---
+
 ## Upcoming Sprints
 
 | Sprint | Name | Key Deliverables |
 |--------|------|-----------------|
-| 5 | Big Orders & Menu | menu_categories, menu_items (107 seed), orders, order_items, order_status_history |
-| 6 | Campaigns & Events | Campaign CRUD, event management |
 | 7 | Discovery & Landing | Geo-based lead discovery, public landing page |
 | 8 | Landing Page & Chat | CMS-driven content, live chat (WebSocket) |
 | 9 | Channel Integration | Zalo OA, Facebook, Vihat SMS/ZNS |

@@ -375,3 +375,70 @@ export interface OrderStatusHistory {
   created_at: string;
   changer?: Pick<User, "id" | "name"> | null;
 }
+
+// Campaign & Event Types
+export type CampaignType = "sms" | "email";
+export type CampaignStatus = "draft" | "scheduled" | "sending" | "sent" | "cancelled";
+export type RecipientStatus = "pending" | "sent" | "delivered" | "failed" | "bounced";
+export type RecurringEventType = "birthday" | "company_anniversary" | "children_day" | "custom";
+
+export interface SegmentFilters {
+  customer_type?: string[];
+  city?: string[];
+  store_id?: string[];
+  min_revenue?: number;
+  max_revenue?: number;
+  last_order_before?: string;
+  last_order_after?: string;
+}
+
+export interface Campaign {
+  id: string;
+  name: string;
+  campaign_type: CampaignType;
+  segment_filters: SegmentFilters;
+  subject: string | null;
+  template: string | null;
+  status: CampaignStatus;
+  scheduled_at: string | null;
+  sent_at: string | null;
+  sent_count: number;
+  delivered_count: number;
+  failed_count: number;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+}
+
+export interface CampaignWithRelations extends Campaign {
+  creator?: Pick<User, "id" | "name" | "email"> | null;
+  recipients?: CampaignRecipient[];
+}
+
+export interface CampaignRecipient {
+  id: string;
+  campaign_id: string;
+  customer_id: string;
+  channel: CampaignType;
+  destination: string;
+  status: RecipientStatus;
+  sent_at: string | null;
+  error: string | null;
+  created_at: string;
+  customer?: Pick<IndividualCustomer, "id" | "full_name" | "phone" | "email"> | null;
+}
+
+export interface RecurringEvent {
+  id: string;
+  customer_id: string;
+  event_type: RecurringEventType;
+  event_name: string;
+  event_date: string;
+  reminder_days_before: number;
+  last_reminded_at: string | null;
+  active: boolean;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+}

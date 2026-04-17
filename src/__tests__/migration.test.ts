@@ -337,4 +337,91 @@ describe("Database migrations", () => {
       expect(sql).toMatch(/orders[\s\S]*deleted_at/);
     });
   });
+
+  describe("Sprint 6: Campaigns & Events migration", () => {
+    const sql = readFileSync(join(migrationsDir, "20260417900000_sprint6_campaigns_events.sql"), "utf-8");
+
+    it("should create campaigns table", () => {
+      expect(sql).toContain("CREATE TABLE campaigns");
+    });
+
+    it("should create campaign_recipients table", () => {
+      expect(sql).toContain("CREATE TABLE campaign_recipients");
+    });
+
+    it("should create recurring_events table", () => {
+      expect(sql).toContain("CREATE TABLE recurring_events");
+    });
+
+    it("should have campaign status CHECK with 5 values", () => {
+      for (const s of ["draft", "scheduled", "sending", "sent", "cancelled"]) {
+        expect(sql).toContain(`'${s}'`);
+      }
+    });
+
+    it("should have campaign_type CHECK with sms and email", () => {
+      expect(sql).toContain("'sms'");
+      expect(sql).toContain("'email'");
+    });
+
+    it("should have recipient status CHECK with 5 values", () => {
+      for (const s of ["pending", "sent", "delivered", "failed", "bounced"]) {
+        expect(sql).toContain(`'${s}'`);
+      }
+    });
+
+    it("should have event_type CHECK with 4 values", () => {
+      for (const s of ["birthday", "company_anniversary", "children_day", "custom"]) {
+        expect(sql).toContain(`'${s}'`);
+      }
+    });
+
+    it("should have FK from campaign_recipients to individual_customers", () => {
+      expect(sql).toContain("REFERENCES individual_customers(id)");
+    });
+
+    it("should have FK from recurring_events to individual_customers", () => {
+      expect(sql).toMatch(/recurring_events[\s\S]*REFERENCES individual_customers\(id\)/);
+    });
+
+    it("should enable RLS on all 3 tables", () => {
+      expect(sql).toContain("ALTER TABLE campaigns ENABLE ROW LEVEL SECURITY");
+      expect(sql).toContain("ALTER TABLE campaign_recipients ENABLE ROW LEVEL SECURITY");
+      expect(sql).toContain("ALTER TABLE recurring_events ENABLE ROW LEVEL SECURITY");
+    });
+
+    it("should have indexes on campaigns.status and campaign_recipients.(campaign_id, status)", () => {
+      expect(sql).toContain("idx_campaigns_status");
+      expect(sql).toContain("idx_campaign_recipients_campaign_id");
+      expect(sql).toContain("idx_campaign_recipients_status");
+    });
+
+    it("should seed campaign permissions", () => {
+      expect(sql).toContain("campaigns.view");
+      expect(sql).toContain("campaigns.create");
+      expect(sql).toContain("campaigns.edit");
+      expect(sql).toContain("campaigns.delete");
+      expect(sql).toContain("campaigns.send");
+    });
+
+    it("should seed event permissions", () => {
+      expect(sql).toContain("events.view");
+      expect(sql).toContain("events.create");
+      expect(sql).toContain("events.edit");
+      expect(sql).toContain("events.delete");
+    });
+
+    it("should have segment_filters jsonb column", () => {
+      expect(sql).toContain("segment_filters jsonb");
+    });
+
+    it("should have soft delete on campaigns and recurring_events", () => {
+      expect(sql).toMatch(/campaigns[\s\S]*deleted_at/);
+      expect(sql).toMatch(/recurring_events[\s\S]*deleted_at/);
+    });
+
+    it("should grant permissions to marketing role", () => {
+      expect(sql).toContain("'marketing'");
+    });
+  });
 });

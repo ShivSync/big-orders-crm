@@ -98,6 +98,8 @@ SQL files in `supabase/migrations/`. Applied migrations:
 | 20260417700000_sprint5_orders_menu.sql | 5 | APPLIED (menu tables + seeds; orders FK fixed by patch) |
 | 20260417750000_sprint5_orders_fix_storeid.sql | 5 | APPLIED (orders/order_items/order_status_history with text store_id) |
 | 20260417800000_sprint5_security_fixes.sql | 5 | APPLIED |
+| 20260417900000_sprint6_campaigns_events.sql | 6 | PENDING |
+| 20260417950000_sprint6_security_fixes.sql | 6 | PENDING |
 
 ---
 
@@ -111,7 +113,8 @@ SQL files in `supabase/migrations/`. Applied migrations:
 | 3 | Customers & Organizations | DONE |
 | 4 | Sales Pipeline & Opportunities | DONE |
 | 5 | Big Orders & Menu | DONE — commit `80140c4` |
-| 6-12 | Campaigns → Settings/Polish | QUEUED (OVE) |
+| 6 | Campaigns & Events | DONE |
+| 7-12 | Discovery → Settings/Polish | QUEUED (OVE) |
 
 ## Deferred Items
 - PII masking (mask_phone/mask_email on customer/org pages) → Sprint 11

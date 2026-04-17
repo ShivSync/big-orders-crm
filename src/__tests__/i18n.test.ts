@@ -126,6 +126,48 @@ describe("i18n completeness", () => {
     }
   });
 
+  it("should have campaigns section in both languages with matching keys", () => {
+    expect(en).toHaveProperty("campaigns");
+    expect(vi).toHaveProperty("campaigns");
+    expect(Object.keys(en.campaigns).length).toBeGreaterThan(0);
+    expect(Object.keys(en.campaigns).length).toBe(Object.keys(vi.campaigns).length);
+  });
+
+  it("should have events section in both languages with matching keys", () => {
+    expect(en).toHaveProperty("events");
+    expect(vi).toHaveProperty("events");
+    expect(Object.keys(en.events).length).toBeGreaterThan(0);
+    expect(Object.keys(en.events).length).toBe(Object.keys(vi.events).length);
+  });
+
+  it("should have all 5 campaign status labels translated", () => {
+    for (const key of ["statusDraft", "statusScheduled", "statusSending", "statusSent", "statusCancelled"]) {
+      expect(en.campaigns).toHaveProperty(key);
+      expect(vi.campaigns).toHaveProperty(key);
+    }
+  });
+
+  it("should have all 5 recipient status labels translated", () => {
+    for (const key of ["recipientStatusPending", "recipientStatusSent", "recipientStatusDelivered", "recipientStatusFailed", "recipientStatusBounced"]) {
+      expect(en.campaigns).toHaveProperty(key);
+      expect(vi.campaigns).toHaveProperty(key);
+    }
+  });
+
+  it("should have all 4 recurring event type labels translated", () => {
+    for (const key of ["typeBirthday", "typeCompanyAnniversary", "typeChildrenDay", "typeCustom"]) {
+      expect(en.events).toHaveProperty(key);
+      expect(vi.events).toHaveProperty(key);
+    }
+  });
+
+  it("should have campaign segment filter labels translated", () => {
+    for (const key of ["segmentFilters", "customerType", "city", "store", "revenueRange", "minRevenue", "maxRevenue"]) {
+      expect(en.campaigns).toHaveProperty(key);
+      expect(vi.campaigns).toHaveProperty(key);
+    }
+  });
+
   it("should have no empty string values", () => {
     const emptyEn = enKeys.filter((k) => {
       const parts = k.split(".");
