@@ -19,6 +19,10 @@ import {
 } from "@/components/ui/dialog";
 import { Plus, Search, Eye } from "lucide-react";
 import { toast } from "sonner";
+import { Combobox } from "@/components/ui/combobox";
+import { LocationCascader } from "@/components/ui/location-cascader";
+import { RequiredLabel } from "@/components/ui/required-label";
+import { maskPhone } from "@/lib/pii-mask";
 import type { Lead, LeadStage, LeadType, LeadSource, Store, User } from "@/types/database";
 
 function sanitizeSearch(input: string): string {
@@ -55,6 +59,13 @@ export default function LeadsPage() {
   const [filterStage, setFilterStage] = useState<string>("all");
   const [filterSource, setFilterSource] = useState<string>("all");
   const [filterStore, setFilterStore] = useState<string>("all");
+
+  // Form state for combobox/cascader
+  const [formStoreId, setFormStoreId] = useState("");
+  const [formAssignedTo, setFormAssignedTo] = useState("");
+  const [formCity, setFormCity] = useState("");
+  const [formDistrict, setFormDistrict] = useState("");
+  const [formWard, setFormWard] = useState("");
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -97,17 +108,14 @@ export default function LeadsPage() {
       email: form.get("email") as string || null,
       lead_type: form.get("lead_type") as LeadType,
       lead_source: form.get("lead_source") as LeadSource,
-      store_id: form.get("store_id") as string || null,
-      assigned_to: form.get("assigned_to") as string || null,
-      city: form.get("city") as string || null,
-      district: form.get("district") as string || null,
-      ward: form.get("ward") as string || null,
+      store_id: formStoreId || null,
+      assigned_to: formAssignedTo || null,
+      city: formCity || null,
+      district: formDistrict || null,
+      ward: formWard || null,
       address: form.get("address") as string || null,
       notes: form.get("notes") as string || null,
     };
-    if (data.store_id === "none") data.store_id = null;
-    if (data.assigned_to === "none") data.assigned_to = null;
-
     const { error } = await supabase.from("leads").insert(data);
     if (error) {
       toast.error(error.message);
@@ -115,6 +123,7 @@ export default function LeadsPage() {
     }
     toast.success(t("leadCreated"));
     setDialogOpen(false);
+    setFormStoreId(""); setFormAssignedTo(""); setFormCity(""); setFormDistrict(""); setFormWard("");
     loadData();
   }
 
@@ -165,19 +174,19 @@ export default function LeadsPage() {
             <form onSubmit={handleCreateLead} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2 space-y-2">
-                  <Label>{t("fullName")} *</Label>
+                  <RequiredLabel required>{t("fullName")}</RequiredLabel>
                   <Input name="full_name" required />
                 </div>
                 <div className="space-y-2">
-                  <Label>{t("phone")}</Label>
+                  <RequiredLabel>{t("phone")}</RequiredLabel>
                   <Input name="phone" placeholder="+84..." />
                 </div>
                 <div className="space-y-2">
-                  <Label>{t("email")}</Label>
+                  <RequiredLabel>{t("email")}</RequiredLabel>
                   <Input name="email" type="email" />
                 </div>
                 <div className="space-y-2">
-                  <Label>{t("leadType")}</Label>
+                  <RequiredLabel required>{t("leadType")}</RequiredLabel>
                   <Select name="lead_type" defaultValue="individual">
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
@@ -188,7 +197,7 @@ export default function LeadsPage() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label>{t("leadSource")}</Label>
+                  <RequiredLabel required>{t("leadSource")}</RequiredLabel>
                   <Select name="lead_source" defaultValue="manual">
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
@@ -199,47 +208,42 @@ export default function LeadsPage() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label>{t("store")}</Label>
-                  <Select name="store_id" defaultValue="none">
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">—</SelectItem>
-                      {stores.map((s) => (
-                        <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <RequiredLabel>{t("store")}</RequiredLabel>
+                  <Combobox
+                    options={stores.map(s => ({ value: s.id, label: s.name }))}
+                    value={formStoreId}
+                    onChange={setFormStoreId}
+                    placeholder={t("store")}
+                  />
                 </div>
                 <div className="space-y-2">
-                  <Label>{t("assignedTo")}</Label>
-                  <Select name="assigned_to" defaultValue="none">
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">—</SelectItem>
-                      {users.map((u) => (
-                        <SelectItem key={u.id} value={u.id}>{u.name || u.email}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <RequiredLabel>{t("assignedTo")}</RequiredLabel>
+                  <Combobox
+                    options={users.map(u => ({ value: u.id, label: u.name || u.email }))}
+                    value={formAssignedTo}
+                    onChange={setFormAssignedTo}
+                    placeholder={t("assignedTo")}
+                  />
                 </div>
-                <div className="space-y-2">
-                  <Label>{t("city")}</Label>
-                  <Input name="city" />
-                </div>
-                <div className="space-y-2">
-                  <Label>{t("district")}</Label>
-                  <Input name="district" />
-                </div>
-                <div className="space-y-2">
-                  <Label>{t("ward")}</Label>
-                  <Input name="ward" />
+                <div className="col-span-2">
+                  <LocationCascader
+                    city={formCity}
+                    district={formDistrict}
+                    ward={formWard}
+                    onCityChange={setFormCity}
+                    onDistrictChange={setFormDistrict}
+                    onWardChange={setFormWard}
+                    cityLabel={t("city")}
+                    districtLabel={t("district")}
+                    wardLabel={t("ward")}
+                  />
                 </div>
                 <div className="col-span-2 space-y-2">
-                  <Label>{t("address")}</Label>
+                  <RequiredLabel>{t("address")}</RequiredLabel>
                   <Input name="address" />
                 </div>
                 <div className="col-span-2 space-y-2">
-                  <Label>{t("notes")}</Label>
+                  <RequiredLabel>{t("notes")}</RequiredLabel>
                   <Textarea name="notes" rows={3} />
                 </div>
               </div>
@@ -349,7 +353,7 @@ export default function LeadsPage() {
                 leads.map((lead) => (
                   <TableRow key={lead.id} className="cursor-pointer hover:bg-gray-50" onClick={() => router.push(`/leads/${lead.id}`)}>
                     <TableCell className="font-medium">{lead.full_name}</TableCell>
-                    <TableCell>{lead.phone || "—"}</TableCell>
+                    <TableCell>{lead.phone ? maskPhone(lead.phone) : "—"}</TableCell>
                     <TableCell>
                       <Badge variant="secondary">{typeKey(lead.lead_type)}</Badge>
                     </TableCell>

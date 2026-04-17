@@ -226,12 +226,31 @@ export default function DiscoveryPage() {
 
       {/* Map */}
       <Card className="relative z-0">
-        <CardContent className="p-0 h-[400px]">
+        <CardContent className="p-0 h-[400px] relative">
           <DiscoveryMap
             stores={stores}
             leads={filteredLeads}
             selectedStore={selectedStoreData || null}
           />
+          <div className="absolute bottom-2 right-2 bg-white/90 rounded-lg shadow p-2 text-xs z-[1000] max-w-[200px]">
+            <div className="font-semibold mb-1">Legend</div>
+            <div className="flex items-center gap-1 mb-0.5"><span className="inline-block w-2 h-2 rounded-full bg-red-500" /> KFC Store</div>
+            {[
+              { cat: "school", color: "bg-blue-500" },
+              { cat: "university", color: "bg-violet-500" },
+              { cat: "company", color: "bg-gray-500" },
+              { cat: "hotel", color: "bg-yellow-500" },
+              { cat: "event_venue", color: "bg-orange-500" },
+              { cat: "restaurant", color: "bg-green-500" },
+              { cat: "hospital", color: "bg-red-400" },
+              { cat: "government", color: "bg-black" },
+            ].map(({ cat, color }) => (
+              <div key={cat} className="flex items-center gap-1 mb-0.5">
+                <span className={`inline-block w-2 h-2 rounded-full ${color}`} />
+                {t(`categories.${cat}`)}
+              </div>
+            ))}
+          </div>
         </CardContent>
       </Card>
 

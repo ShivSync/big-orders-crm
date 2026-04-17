@@ -93,7 +93,32 @@
     "totalLeads": "Total Leads",
     "activeOpportunities": "Active Opportunities",
     "pendingOrders": "Pending Orders",
-    "monthlyRevenue": "Monthly Revenue"
+    "monthlyRevenue": "Monthly Revenue",
+    "pipelineFunnel": "Pipeline Funnel",
+    "monthlyTrend": "Monthly Trend"
+  },
+  "reports": {
+    "title": "Reports & Analytics",
+    "dateFrom": "From",
+    "dateTo": "To",
+    "store": "Store",
+    "region": "Region",
+    "pipelineFunnel": "Lead Pipeline",
+    "revenueByStore": "Revenue by Store",
+    "revenueBySource": "Revenue by Source",
+    "monthlyTrend": "Monthly Trend",
+    "orderStatus": "Order Status",
+    "conversionRate": "Conversion Rate",
+    "topStores": "Top Performing Stores",
+    "totalLeads": "Total Leads",
+    "totalOrders": "Total Orders",
+    "totalRevenue": "Total Revenue",
+    "pipelineValue": "Pipeline Value",
+    "exportLeads": "Export Leads",
+    "exportCustomers": "Export Customers",
+    "exportOrders": "Export Orders",
+    "exportSuccess": "Export downloaded successfully",
+    "exportError": "Export failed"
   },
   "regions": {
     "ALL": "All Regions",
@@ -679,7 +704,21 @@
       "channelAutoLead": "Inbound messages from unknown contacts automatically create new leads.",
       "recurringEvents": "Set up birthday and anniversary reminders to never miss an outreach opportunity.",
       "storeFilter": "ALL = see all stores. SOME = see stores in your team's region. ONE = see only your assigned store.",
-      "softDelete": "Deleted records are kept in the database for compliance. They can be restored by an admin."
+      "softDelete": "Deleted records are kept in the database for compliance. They can be restored by an admin.",
+      "dashboardStats": "These stats update in real-time. Click any card for details. % change compares current month vs. previous month.",
+      "pipelineFunnelChart": "Shows how many leads are at each stage. A healthy funnel narrows from left to right — wide 'new' and narrow 'converted'.",
+      "monthlyTrendChart": "Tracks leads created and orders fulfilled each month. Use this to spot seasonal patterns and growth trends.",
+      "reportsFilters": "Filter all charts by date range, store, or region. Changes apply to all charts on this page.",
+      "revenueByStoreChart": "Top 10 stores ranked by fulfilled order revenue. Helps identify high-performing locations.",
+      "revenueBySourceChart": "Breakdown of revenue by how the order originated — CRM, landing page, phone, Zalo, Facebook, or OMS.",
+      "orderStatusChart": "Distribution of all orders by their current status. High 'draft' counts may indicate bottlenecks.",
+      "conversionGauge": "Percentage of leads that reached 'converted' stage. Below 25% suggests follow-up improvements needed.",
+      "csvExport": "Download filtered data as CSV. Exports are logged for compliance (Decree 13). Maximum 5,000 rows per export.",
+      "discoveryMapLegend": "Each color represents a different business category. Red markers are KFC stores. Click any marker for details.",
+      "discoveryScore": "Lead score is calculated from distance to store, business category, and size. Higher scores mean better prospects.",
+      "campaignSegment": "Define who receives this campaign. Combine filters to target specific customer segments.",
+      "orderApproval": "Orders with discounts above the set threshold require manager approval before confirmation.",
+      "channelReplyWindow": "Zalo requires ZNS messages within 48 hours of customer's last inbound message."
     }
   },
   "chat": {

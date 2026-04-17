@@ -403,6 +403,80 @@ Receive webhook events from KFC OMS (Phase 1 — log only).
 
 ---
 
+### GET /api/dashboard/stats
+Fetch real-time dashboard statistics from the database.
+
+**Permissions:** Authenticated (any user)
+
+**Response:**
+```json
+{
+  "total_leads": 142,
+  "leads_change_pct": 12.5,
+  "active_opportunities": 38,
+  "pipeline_value": 2450000000,
+  "pending_orders": 15,
+  "monthly_revenue": 890000000,
+  "revenue_change_pct": 8.3,
+  "pipeline_funnel": [
+    { "stage": "new", "count": 10 },
+    { "stage": "consulting", "count": 8 },
+    { "stage": "quoted", "count": 6 },
+    { "stage": "negotiating", "count": 4 },
+    { "stage": "won", "count": 10 }
+  ],
+  "monthly_trend": [
+    { "month": "2026-01", "revenue": 750000000 },
+    { "month": "2026-02", "revenue": 820000000 }
+  ]
+}
+```
+
+---
+
+### GET /api/reports/data
+Fetch aggregated reports data with optional filters.
+
+**Permissions:** `reports.view`
+
+**Query params:**
+- `store_id` (uuid, optional) — filter by store
+- `region` (string, optional) — filter by region (N, S, C)
+- `from` (date, optional) — start date (ISO 8601)
+- `to` (date, optional) — end date (ISO 8601)
+
+**Response:**
+```json
+{
+  "pipeline_funnel": [...],
+  "revenue_by_store": [...],
+  "revenue_by_source": [...],
+  "monthly_trend": [...],
+  "order_status": [...],
+  "conversion_rate": 0.24
+}
+```
+
+---
+
+### GET /api/reports/export
+Export CRM data as CSV file download.
+
+**Permissions:** `reports.export`
+
+**Query params:**
+- `type` (required) — one of: `leads`, `customers`, `orders`
+
+**Behavior:**
+- Generates CSV with all visible columns for the requested entity type
+- Respects soft delete (excludes `deleted_at IS NOT NULL` rows)
+- Logs export action to `audit_logs` (Decree 13 compliance)
+- Returns `Content-Type: text/csv` with `Content-Disposition: attachment` header
+
+**Response:** CSV file download
+
+---
+
 ## Error Responses
 
 All errors follow this format:

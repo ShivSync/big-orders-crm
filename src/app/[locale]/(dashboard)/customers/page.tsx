@@ -18,6 +18,10 @@ import {
 } from "@/components/ui/dialog";
 import { Plus, Search, Eye, DollarSign, Users, ShoppingCart, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
+import { Combobox } from "@/components/ui/combobox";
+import { LocationCascader } from "@/components/ui/location-cascader";
+import { RequiredLabel } from "@/components/ui/required-label";
+import { maskPhone } from "@/lib/pii-mask";
 import type { IndividualCustomer, ContactType, Store } from "@/types/database";
 
 function sanitizeSearch(input: string): string {
@@ -50,6 +54,11 @@ export default function CustomersPage() {
   const [filterType, setFilterType] = useState<string>("all");
   const [filterStore, setFilterStore] = useState<string>("all");
   const [filterCity, setFilterCity] = useState<string>("all");
+
+  const [formStoreId, setFormStoreId] = useState("");
+  const [formCity, setFormCity] = useState("");
+  const [formDistrict, setFormDistrict] = useState("");
+  const [formWard, setFormWard] = useState("");
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -104,16 +113,14 @@ export default function CustomersPage() {
       phone,
       email: (form.get("email") as string) || null,
       contact_type: form.get("contact_type") as ContactType,
-      store_id: form.get("store_id") as string || null,
-      city: (form.get("city") as string) || null,
-      district: (form.get("district") as string) || null,
-      ward: (form.get("ward") as string) || null,
+      store_id: formStoreId || null,
+      city: formCity || null,
+      district: formDistrict || null,
+      ward: formWard || null,
       address: (form.get("address") as string) || null,
       consent_given: form.get("consent_given") === "on",
       consent_date: form.get("consent_given") === "on" ? new Date().toISOString() : null,
     };
-    if (data.store_id === "none") data.store_id = null;
-
     const { error } = await supabase.from("individual_customers").insert(data);
     if (error) {
       toast.error(error.message);
@@ -159,19 +166,19 @@ export default function CustomersPage() {
             <form onSubmit={handleCreate} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2 space-y-2">
-                  <Label>{t("fullName")} *</Label>
+                  <RequiredLabel required>{t("fullName")}</RequiredLabel>
                   <Input name="full_name" required />
                 </div>
                 <div className="space-y-2">
-                  <Label>{t("phone")}</Label>
+                  <RequiredLabel>{t("phone")}</RequiredLabel>
                   <Input name="phone" placeholder="+84..." />
                 </div>
                 <div className="space-y-2">
-                  <Label>{t("email")}</Label>
+                  <RequiredLabel>{t("email")}</RequiredLabel>
                   <Input name="email" type="email" />
                 </div>
                 <div className="space-y-2">
-                  <Label>{t("contactType")}</Label>
+                  <RequiredLabel required>{t("contactType")}</RequiredLabel>
                   <Select name="contact_type" defaultValue="other">
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
@@ -182,31 +189,29 @@ export default function CustomersPage() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label>{t("store")}</Label>
-                  <Select name="store_id" defaultValue="none">
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">—</SelectItem>
-                      {stores.map((s) => (
-                        <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <RequiredLabel>{t("store")}</RequiredLabel>
+                  <Combobox
+                    options={stores.map(s => ({ value: s.id, label: s.name }))}
+                    value={formStoreId}
+                    onChange={setFormStoreId}
+                    placeholder={t("store")}
+                  />
                 </div>
-                <div className="space-y-2">
-                  <Label>{t("city")}</Label>
-                  <Input name="city" />
+                <div className="col-span-2">
+                  <LocationCascader
+                    city={formCity}
+                    district={formDistrict}
+                    ward={formWard}
+                    onCityChange={setFormCity}
+                    onDistrictChange={setFormDistrict}
+                    onWardChange={setFormWard}
+                    cityLabel={t("city")}
+                    districtLabel={t("district")}
+                    wardLabel={t("ward")}
+                  />
                 </div>
-                <div className="space-y-2">
-                  <Label>{t("district")}</Label>
-                  <Input name="district" />
-                </div>
-                <div className="space-y-2">
-                  <Label>{t("ward")}</Label>
-                  <Input name="ward" />
-                </div>
-                <div className="space-y-2">
-                  <Label>{t("address")}</Label>
+                <div className="col-span-2 space-y-2">
+                  <RequiredLabel>{t("address")}</RequiredLabel>
                   <Input name="address" />
                 </div>
                 <div className="col-span-2 flex items-center gap-2">
@@ -324,7 +329,7 @@ export default function CustomersPage() {
                 customers.map((customer) => (
                   <TableRow key={customer.id} className="cursor-pointer hover:bg-gray-50" onClick={() => router.push(`/customers/${customer.id}`)}>
                     <TableCell className="font-medium">{customer.full_name}</TableCell>
-                    <TableCell>{customer.phone || "—"}</TableCell>
+                    <TableCell>{customer.phone ? maskPhone(customer.phone) : "—"}</TableCell>
                     <TableCell>
                       <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${contactTypeColors[customer.contact_type]}`}>
                         {contactTypeLabel(customer.contact_type)}

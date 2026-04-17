@@ -93,7 +93,32 @@
     "totalLeads": "Tổng khách hàng tiềm năng",
     "activeOpportunities": "Cơ hội đang mở",
     "pendingOrders": "Đơn hàng chờ xử lý",
-    "monthlyRevenue": "Doanh thu tháng"
+    "monthlyRevenue": "Doanh thu tháng",
+    "pipelineFunnel": "Phễu bán hàng",
+    "monthlyTrend": "Xu hướng hàng tháng"
+  },
+  "reports": {
+    "title": "Báo cáo & Phân tích",
+    "dateFrom": "Từ ngày",
+    "dateTo": "Đến ngày",
+    "store": "Cửa hàng",
+    "region": "Khu vực",
+    "pipelineFunnel": "Phễu khách hàng",
+    "revenueByStore": "Doanh thu theo cửa hàng",
+    "revenueBySource": "Doanh thu theo nguồn",
+    "monthlyTrend": "Xu hướng hàng tháng",
+    "orderStatus": "Trạng thái đơn hàng",
+    "conversionRate": "Tỷ lệ chuyển đổi",
+    "topStores": "Cửa hàng nổi bật",
+    "totalLeads": "Tổng khách hàng tiềm năng",
+    "totalOrders": "Tổng đơn hàng",
+    "totalRevenue": "Tổng doanh thu",
+    "pipelineValue": "Giá trị cơ hội",
+    "exportLeads": "Xuất khách hàng TN",
+    "exportCustomers": "Xuất khách hàng",
+    "exportOrders": "Xuất đơn hàng",
+    "exportSuccess": "Tải xuất thành công",
+    "exportError": "Xuất thất bại"
   },
   "regions": {
     "ALL": "Tất cả",
@@ -679,7 +704,21 @@
       "channelAutoLead": "Tin nhắn đến từ liên hệ không xác định sẽ tự động tạo lead mới.",
       "recurringEvents": "Thiết lập nhắc nhở sinh nhật và kỷ niệm để không bỏ lỡ cơ hội tiếp cận.",
       "storeFilter": "TẤT CẢ = xem tất cả cửa hàng. MỘT SỐ = xem cửa hàng trong khu vực nhóm. MỘT = chỉ xem cửa hàng được gán.",
-      "softDelete": "Bản ghi đã xóa được giữ trong cơ sở dữ liệu để tuân thủ. Admin có thể khôi phục."
+      "softDelete": "Bản ghi đã xóa được giữ trong cơ sở dữ liệu để tuân thủ. Admin có thể khôi phục.",
+      "dashboardStats": "Thống kê cập nhật theo thời gian thực. % thay đổi so sánh tháng này với tháng trước.",
+      "pipelineFunnelChart": "Số khách hàng tiềm năng ở mỗi giai đoạn. Phễu lành mạnh thu hẹp từ trái sang phải.",
+      "monthlyTrendChart": "Theo dõi khách hàng TN tạo mới và đơn hàng hoàn thành mỗi tháng.",
+      "reportsFilters": "Lọc tất cả biểu đồ theo khoảng thời gian, cửa hàng hoặc khu vực.",
+      "revenueByStoreChart": "Top 10 cửa hàng theo doanh thu đơn hàng đã hoàn thành.",
+      "revenueBySourceChart": "Phân tích doanh thu theo nguồn đơn hàng — CRM, landing page, điện thoại, Zalo, Facebook, OMS.",
+      "orderStatusChart": "Phân bổ đơn hàng theo trạng thái hiện tại.",
+      "conversionGauge": "Phần trăm khách hàng TN đạt giai đoạn 'đã chuyển đổi'. Dưới 25% cần cải thiện theo dõi.",
+      "csvExport": "Tải xuống dữ liệu dạng CSV. Thao tác xuất được ghi lại theo Nghị định 13. Tối đa 5.000 dòng.",
+      "discoveryMapLegend": "Mỗi màu đại diện cho một loại hình doanh nghiệp. Điểm đánh dấu đỏ là cửa hàng KFC.",
+      "discoveryScore": "Điểm khách hàng TN được tính từ khoảng cách đến cửa hàng, loại hình và quy mô.",
+      "campaignSegment": "Xác định đối tượng nhận chiến dịch. Kết hợp bộ lọc để nhắm mục tiêu.",
+      "orderApproval": "Đơn hàng có chiết khấu vượt ngưỡng cần phê duyệt của quản lý.",
+      "channelReplyWindow": "Zalo yêu cầu gửi tin ZNS trong vòng 48 giờ kể từ tin nhắn cuối của khách hàng."
     }
   },
   "chat": {

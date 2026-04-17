@@ -103,7 +103,11 @@ SQL files in `supabase/migrations/`. Applied migrations:
 | 20260418000000_sprint7_store_seeds.sql | 7 | APPLIED (244 KFC stores + 665 competitor locations) |
 | 20260418100000_sprint7_settings_discovery.sql | 7 | APPLIED (system_settings, discovery+settings permissions) |
 | 20260418200000_sprint8_landing_chat.sql | 8 | APPLIED (landing_page_content, chat_sessions, chat_messages, bot_faq + Realtime) |
-| 20260418300000_sprint9_channels.sql | 9 | PENDING (channel_messages + RLS + Realtime, channels permissions, lead_source extension) |
+| 20260418300000_sprint9_channels.sql | 9 | APPLIED (channel_messages + RLS + Realtime, channels permissions, lead_source extension) |
+| 20260418400000_sprint10_oms_integration.sql | 10 | APPLIED (oms_store_id, last_synced_at on stores, integrations permissions) |
+| 20260418500000_sprint11_reports_kpi.sql | 11 | PENDING (kpi_targets table, reports permissions) |
+| 20260418510000_sprint11_kpi_policy_fix.sql | 11 | PENDING (restrict kpi_targets INSERT/UPDATE to root only) |
+| 20260418520000_sprint11_seed_test_data.sql | 11 | PENDING (10 leads, 6 customers, 3 orgs, 6 opps, 5 orders, activities, events) |
 
 ---
 
@@ -120,12 +124,13 @@ SQL files in `supabase/migrations/`. Applied migrations:
 | 6 | Campaigns & Events | DONE — commit `29fb56b` |
 | 7 | Discovery Engine | DONE — commit `c996e73` |
 | 8 | Landing Page & Live Chat | DONE — commit `52992a5` |
-| 9 | Channel Integrations + Help | DONE — pending commit |
-| 10-12 | OMS Integration → Settings/Polish | QUEUED (OVE) |
+| 9 | Channel Integrations + Help | DONE — commit `a05bd198` |
+| 10 | OMS Integration | DONE — commit `32cff8f` |
+| 11 | Reports & Dashboard + UX Polish | IN PROGRESS |
+| 12 | Settings & Final Polish | QUEUED (OVE) |
 
 ## Deferred Items
-- PII masking (mask_phone/mask_email on customer/org pages) → Sprint 11
-- Dropdown scoping (store filter on link dialogs) → Sprint 11
+- Dropdown scoping (store filter on link dialogs) → Sprint 12
 
 ## OVE Sprint Queue
 Sprint specs in `sprints/`. Queue in `sprints/queue.txt`. Run with `ove bigorders`.

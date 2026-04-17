@@ -203,9 +203,40 @@ Each sprint includes: DB migration, UI pages, API routes, i18n keys, tests, and 
 
 ---
 
+## Sprint 11: Reports & Analytics
+
+**Status:** DONE | **Date:** 2026-04-18
+
+**Built:**
+- 1 table: `kpi_targets` (target metrics for reports comparison)
+- Reports & Analytics page with 6 Recharts visualizations:
+  - Pipeline funnel chart
+  - Revenue by store (bar chart)
+  - Revenue by source (bar chart)
+  - Monthly revenue trend (line chart)
+  - Order status distribution (pie chart)
+  - Lead-to-order conversion gauge
+- Enhanced dashboard with real DB-backed stats:
+  - Total leads (with % change vs prior period)
+  - Active opportunities (with pipeline value)
+  - Pending orders count
+  - Monthly revenue (with % change vs prior period)
+  - Two mini charts: pipeline funnel, monthly trend
+- CSV export for leads, customers, orders (audit logged, Decree 13 compliant soft-delete aware)
+- Dashboard stats API: `GET /api/dashboard/stats`
+- Reports data API: `GET /api/reports/data` with `store_id`, `region`, `from`, `to` filters
+- Reports export API: `GET /api/reports/export?type=leads|customers|orders`
+- Pipeline page redesigned from horizontal-scroll Kanban to responsive grid layout (2x3, 3x2, 6-col breakpoints)
+- Discovery map: color-coded competitor markers by category (school=blue, company=grey, hotel=gold, etc.) with legend
+- Contextual help tooltips on dashboard and reports pages
+- Permissions seeded: `reports.view`, `reports.export`
+- RLS on `kpi_targets` with permission checks
+- 266 tests passing, build clean
+
+---
+
 ## Upcoming Sprints
 
 | Sprint | Name | Key Deliverables |
 |--------|------|-----------------|
-| 11 | Reports & Dashboards | Analytics, KPIs, export |
 | 12 | Settings & Polish | Admin settings, UX polish, final QA |

@@ -4,7 +4,7 @@
 
 PostgreSQL via Supabase self-hosted on EC2. All tables have RLS enabled, soft delete via `deleted_at`, and `updated_at` triggers.
 
-## Tables (32 total as of Sprint 10)
+## Tables (33 total as of Sprint 11)
 
 ### Sprint 1: Foundation (13 tables)
 
@@ -172,6 +172,44 @@ PostgreSQL via Supabase self-hosted on EC2. All tables have RLS enabled, soft de
 |------|-------------|
 | `integrations.view` | View OMS integration status and sync history |
 | `integrations.manage` | Trigger OMS sync, seed customers, manage webhook settings |
+
+### Sprint 11: Reports & Analytics (1 table)
+
+| Table | Purpose |
+|-------|---------|
+| `kpi_targets` | KPI target definitions for reports comparison and goal tracking |
+
+#### `kpi_targets` — Schema
+
+| Column | Type | Constraints | Description |
+|--------|------|-------------|-------------|
+| `id` | `uuid` | PK, default `gen_random_uuid()` | Target ID |
+| `metric` | `text` | NOT NULL | Metric identifier (e.g. `monthly_revenue`, `lead_conversion`, `orders_count`) |
+| `target_value` | `numeric` | NOT NULL | Target value for the metric |
+| `period_start` | `date` | NOT NULL | Period start date |
+| `period_end` | `date` | NOT NULL | Period end date |
+| `store_id` | `uuid` | FK → `stores(id)`, nullable | Store scope (null = company-wide) |
+| `region` | `text` | nullable | Region scope (N, S, C) |
+| `created_by` | `uuid` | FK → `users(id)`, nullable | User who created the target |
+| `created_at` | `timestamptz` | NOT NULL, default `now()` | Creation timestamp |
+| `updated_at` | `timestamptz` | NOT NULL, default `now()` | Last update (trigger) |
+| `deleted_at` | `timestamptz` | nullable | Soft delete |
+
+#### RLS Policies
+
+| Policy | Operation | Rule |
+|--------|-----------|------|
+| `kpi_targets_select` | SELECT | `deleted_at IS NULL` AND (`is_root` OR `user_has_permission(uid, 'reports.view')`) |
+| `kpi_targets_insert` | INSERT | `is_root` OR `user_has_permission(uid, 'reports.export')` |
+| `kpi_targets_update` | UPDATE | `deleted_at IS NULL` AND (`is_root` OR `user_has_permission(uid, 'reports.export')`) |
+| `kpi_targets_delete` | UPDATE (soft) | `deleted_at IS NULL` AND (`is_root` OR `user_has_permission(uid, 'reports.export')`) |
+
+#### Permissions
+
+| Slug | Description |
+|------|-------------|
+| `reports.view` | View reports, analytics dashboards, and KPI targets |
+| `reports.export` | Export CRM data as CSV and manage KPI targets |
 
 ## RLS Pattern
 

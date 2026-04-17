@@ -450,6 +450,20 @@ export interface CampaignRecipient {
   customer?: Pick<IndividualCustomer, "id" | "full_name" | "phone" | "email"> | null;
 }
 
+export type KpiMetric = "leads_target" | "orders_target" | "revenue_target" | "conversion_target";
+
+export interface KpiTarget {
+  id: string;
+  store_id: string | null;
+  role_slug: string | null;
+  period: string;
+  metric: KpiMetric;
+  value: number;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface RecurringEvent {
   id: string;
   customer_id: string;

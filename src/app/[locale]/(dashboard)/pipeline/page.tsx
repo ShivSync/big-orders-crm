@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -152,7 +152,7 @@ function StageColumn({
   );
 
   return (
-    <div className={`rounded-lg border-2 ${stageColors[stage]} p-3 min-w-[250px] w-[250px] flex flex-col max-h-[calc(100vh-280px)]`}>
+    <div className={`rounded-lg border-2 ${stageColors[stage]} p-3 flex flex-col min-h-[200px] max-h-[400px]`}>
       <div className="flex items-center justify-between mb-3">
         <div>
           <h3 className="font-semibold text-sm">{t(stageKey)}</h3>
@@ -181,7 +181,7 @@ function StageColumn({
 export default function PipelinePage() {
   const t = useTranslations("pipeline");
   const tCommon = useTranslations("common");
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   const [opportunities, setOpportunities] = useState<OpportunityWithRelations[]>([]);
   const [users, setUsers] = useState<Pick<User, "id" | "name">[]>([]);
@@ -479,7 +479,7 @@ export default function PipelinePage() {
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
         >
-          <div className="flex gap-4 overflow-x-auto pb-4">
+          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 pb-4">
             {STAGES.map((stage) => (
               <StageColumn
                 key={stage}

@@ -5,7 +5,6 @@ import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from "react-le
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-// Fix Leaflet default icon issue with Next.js
 const storeIcon = new L.Icon({
   iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png",
   shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
@@ -15,14 +14,30 @@ const storeIcon = new L.Icon({
   shadowSize: [41, 41],
 });
 
-const leadIcon = new L.Icon({
-  iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png",
-  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
-  iconSize: [20, 33],
-  iconAnchor: [10, 33],
-  popupAnchor: [1, -28],
-  shadowSize: [33, 33],
-});
+const CATEGORY_MARKER_COLORS: Record<string, string> = {
+  school: "blue",
+  university: "violet",
+  company: "grey",
+  hotel: "gold",
+  event_venue: "orange",
+  restaurant: "green",
+  club: "yellow",
+  hospital: "red",
+  government: "black",
+  other: "blue",
+};
+
+function getCategoryIcon(category: string): L.Icon {
+  const color = CATEGORY_MARKER_COLORS[category] || "blue";
+  return new L.Icon({
+    iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-${color}.png`,
+    shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
+    iconSize: [20, 33],
+    iconAnchor: [10, 33],
+    popupAnchor: [1, -28],
+    shadowSize: [33, 33],
+  });
+}
 
 interface Store {
   id: string;
@@ -61,7 +76,7 @@ function MapUpdater({ center, zoom }: { center: [number, number]; zoom: number }
 export default function DiscoveryMap({ stores, leads, selectedStore }: Props) {
   const center: [number, number] = selectedStore
     ? [selectedStore.lat, selectedStore.lng]
-    : [16.0, 106.0]; // Vietnam center
+    : [16.0, 106.0];
   const zoom = selectedStore ? 14 : 6;
 
   return (
@@ -100,20 +115,19 @@ export default function DiscoveryMap({ stores, leads, selectedStore }: Props) {
 
       {leads.map(lead => {
         if (!lead.metadata?.lat || !lead.metadata?.lng) return null;
+        const category = lead.metadata.category || "other";
         return (
           <Marker
             key={lead.id}
             position={[lead.metadata.lat, lead.metadata.lng]}
-            icon={leadIcon}
+            icon={getCategoryIcon(category)}
           >
             <Popup>
               <strong>{lead.full_name}</strong>
               <br />
-              {lead.metadata.category && `Category: ${lead.metadata.category}`}
-              <br />
-              {lead.metadata.score !== undefined && `Score: ${lead.metadata.score}`}
-              <br />
-              {lead.metadata.distance_km !== undefined && `Distance: ${lead.metadata.distance_km} km`}
+              {lead.metadata.category && <><span style={{ color: CATEGORY_MARKER_COLORS[category] }}>●</span> {lead.metadata.category}<br /></>}
+              {lead.metadata.score !== undefined && <>Score: {lead.metadata.score}<br /></>}
+              {lead.metadata.distance_km !== undefined && <>Distance: {lead.metadata.distance_km} km</>}
             </Popup>
           </Marker>
         );
