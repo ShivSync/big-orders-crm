@@ -31,6 +31,7 @@
     "orders": "Đơn hàng lớn",
     "campaigns": "Chiến dịch",
     "discovery": "Khám phá",
+    "chatAdmin": "Chat",
     "reports": "Báo cáo",
     "settings": "Cài đặt",
     "users": "Người dùng",
@@ -552,5 +553,48 @@
       "government": "Cơ quan nhà nước",
       "other": "Khác"
     }
+  },
+  "landing": {
+    "heroTitle": "Tiệc lớn cùng KFC Vietnam",
+    "heroSubtitle": "Đặt tiệc sinh nhật, sự kiện công ty, họp mặt — phục vụ từ 20 đến 500 khách",
+    "bookNow": "Đặt tiệc ngay",
+    "menuShowcase": "Thực đơn tiệc nổi bật",
+    "gallery": "Khoảnh khắc vui vẻ",
+    "formTitle": "Đặt tiệc",
+    "formName": "Họ và tên",
+    "formPhone": "Số điện thoại",
+    "formEventType": "Loại sự kiện",
+    "formGuestCount": "Số lượng khách",
+    "formDate": "Ngày mong muốn",
+    "formNotes": "Ghi chú",
+    "formSubmit": "Gửi yêu cầu",
+    "formSuccess": "Cảm ơn! Chúng tôi sẽ liên hệ trong 24h.",
+    "formError": "Có lỗi xảy ra. Vui lòng thử lại.",
+    "eventTypes": {
+      "birthday": "Sinh nhật",
+      "corporate": "Sự kiện công ty",
+      "school": "Sự kiện trường học",
+      "wedding": "Tiệc cưới",
+      "other": "Khác"
+    },
+    "hotline": "Hotline",
+    "guests": "khách",
+    "perPerson": "/người",
+    "viewMenu": "Xem thực đơn"
+  },
+  "chat": {
+    "title": "Chat với KFC",
+    "greeting": "Xin chào! 👋 Tôi là trợ lý đặt tiệc KFC. Bạn muốn đặt tiệc gì?",
+    "askEventType": "Bạn muốn tổ chức sự kiện gì? (sinh nhật, công ty, trường học, tiệc cưới...)",
+    "askGuestCount": "Tuyệt vời! Bạn dự kiến bao nhiêu khách?",
+    "askContact": "Vui lòng cho tôi biết tên và số điện thoại để chúng tôi liên hệ:",
+    "thankYou": "Cảm ơn bạn! Nhân viên KFC sẽ liên hệ trong 24h. 🎉",
+    "talkToHuman": "Nói chuyện với nhân viên",
+    "faqNotFound": "Xin lỗi, tôi chưa hiểu câu hỏi. Bạn có muốn nói chuyện với nhân viên không?",
+    "escalated": "Đã chuyển cho nhân viên. Vui lòng chờ trong giây lát.",
+    "placeholder": "Nhập tin nhắn...",
+    "send": "Gửi",
+    "online": "Trực tuyến",
+    "typing": "Đang gõ..."
   }
 }

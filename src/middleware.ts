@@ -8,11 +8,12 @@ const intlMiddleware = createMiddleware(routing);
 export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Skip auth check for login and reset-password
+  // Skip auth check for login, reset-password, and public pages
   const isAuthRoute = routing.locales.some(
     (locale) =>
       pathname.startsWith(`/${locale}/login`) ||
-      pathname.startsWith(`/${locale}/reset-password`)
+      pathname.startsWith(`/${locale}/reset-password`) ||
+      pathname.startsWith(`/${locale}/book-party`)
   );
 
   // Apply i18n middleware first

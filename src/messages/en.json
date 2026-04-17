@@ -31,6 +31,7 @@
     "orders": "Big Orders",
     "campaigns": "Campaigns",
     "discovery": "Discovery",
+    "chatAdmin": "Chat",
     "reports": "Reports",
     "settings": "Settings",
     "users": "Users",
@@ -552,5 +553,48 @@
       "government": "Government",
       "other": "Other"
     }
+  },
+  "landing": {
+    "heroTitle": "Big Party with KFC Vietnam",
+    "heroSubtitle": "Book birthday parties, corporate events, gatherings — serving 20 to 500 guests",
+    "bookNow": "Book Now",
+    "menuShowcase": "Featured Party Menu",
+    "gallery": "Happy Moments",
+    "formTitle": "Book a Party",
+    "formName": "Full Name",
+    "formPhone": "Phone Number",
+    "formEventType": "Event Type",
+    "formGuestCount": "Number of Guests",
+    "formDate": "Preferred Date",
+    "formNotes": "Notes",
+    "formSubmit": "Submit Request",
+    "formSuccess": "Thank you! We'll contact you within 24h.",
+    "formError": "Something went wrong. Please try again.",
+    "eventTypes": {
+      "birthday": "Birthday",
+      "corporate": "Corporate Event",
+      "school": "School Event",
+      "wedding": "Wedding",
+      "other": "Other"
+    },
+    "hotline": "Hotline",
+    "guests": "guests",
+    "perPerson": "/person",
+    "viewMenu": "View Menu"
+  },
+  "chat": {
+    "title": "Chat with KFC",
+    "greeting": "Hello! 👋 I'm KFC's party booking assistant. What kind of party are you looking for?",
+    "askEventType": "What type of event are you planning? (birthday, corporate, school, wedding...)",
+    "askGuestCount": "Great! How many guests are you expecting?",
+    "askContact": "Please share your name and phone number so we can contact you:",
+    "thankYou": "Thank you! A KFC team member will contact you within 24h. 🎉",
+    "talkToHuman": "Talk to a human",
+    "faqNotFound": "Sorry, I didn't understand that. Would you like to speak with a team member?",
+    "escalated": "Transferred to a team member. Please wait a moment.",
+    "placeholder": "Type a message...",
+    "send": "Send",
+    "online": "Online",
+    "typing": "Typing..."
   }
 }
