@@ -46,26 +46,18 @@ export default function UsersPage() {
 
   async function loadData() {
     const [usersRes, rolesRes, storesRes] = await Promise.all([
-      supabase.from("users").select("*").order("created_at", { ascending: false }),
+      supabase.from("users").select("*, user_roles(roles(*)), user_stores(stores(*))").order("created_at", { ascending: false }),
       supabase.from("roles").select("*").eq("status", "active"),
       supabase.from("stores").select("*").eq("active", true),
     ]);
 
     if (usersRes.data) {
-      const enriched = await Promise.all(
-        usersRes.data.map(async (u) => {
-          const [rolesData, storesData] = await Promise.all([
-            supabase.from("user_roles").select("roles(*)").eq("user_id", u.id),
-            supabase.from("user_stores").select("stores(*)").eq("user_id", u.id),
-          ]);
-          return {
-            ...u,
-            roles: rolesData.data?.map((r: any) => r.roles).filter(Boolean) ?? [],
-            teams: [],
-            stores: storesData.data?.map((s: any) => s.stores).filter(Boolean) ?? [],
-          };
-        })
-      );
+      const enriched = usersRes.data.map((u: any) => ({
+        ...u,
+        roles: u.user_roles?.map((ur: any) => ur.roles).filter(Boolean) ?? [],
+        teams: [],
+        stores: u.user_stores?.map((us: any) => us.stores).filter(Boolean) ?? [],
+      }));
       setUsers(enriched);
     }
     setRoles(rolesRes.data ?? []);
@@ -76,43 +68,18 @@ export default function UsersPage() {
   async function handleCreateUser(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
-    const email = form.get("email") as string;
-    const name = form.get("name") as string;
-    const phone = form.get("phone") as string;
-    const roleId = form.get("role") as string;
-    const region = form.get("region") as string;
-
-    const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-      email,
-      password: "TempPass123!",
-      email_confirm: true,
+    const res = await fetch("/api/users", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: form.get("email"),
+        name: form.get("name"),
+        phone: form.get("phone"),
+        roleId: form.get("role"),
+        region: form.get("region"),
+      }),
     });
-
-    if (authError) {
-      // Fallback: create via service role API
-      const res = await fetch("/api/users", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, name, phone, roleId, region }),
-      });
-      if (!res.ok) return;
-    } else if (authData.user) {
-      await supabase.from("users").insert({
-        id: authData.user.id,
-        email,
-        name,
-        phone,
-        region,
-        status: "active",
-      });
-      if (roleId) {
-        await supabase.from("user_roles").insert({
-          user_id: authData.user.id,
-          role_id: roleId,
-        });
-      }
-    }
-
+    if (!res.ok) return;
     setDialogOpen(false);
     loadData();
   }
