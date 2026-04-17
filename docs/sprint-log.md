@@ -137,7 +137,7 @@ Each sprint includes: DB migration, UI pages, API routes, i18n keys, tests, and 
 
 ## Sprint 6: Campaigns & Recurring Events
 
-**Status:** DONE | **Commit:** (pending)
+**Status:** DONE | **Commit:** `29fb56b`
 
 **Built:**
 - 3 tables: `campaigns`, `campaign_recipients`, `recurring_events`
