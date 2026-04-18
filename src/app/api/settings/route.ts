@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServiceClient } from "@/lib/supabase/server";
 
 export async function GET() {
   const supabase = await createClient();
@@ -9,7 +9,8 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { data: currentUser } = await supabase
+  const svc = await createServiceClient();
+  const { data: currentUser } = await svc
     .from("users")
     .select("is_root")
     .eq("id", user.id)
@@ -50,13 +51,14 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { data: currentUser } = await supabase
+  const svcPut = await createServiceClient();
+  const { data: currentUserPut } = await svcPut
     .from("users")
     .select("is_root")
     .eq("id", user.id)
     .single();
 
-  if (!currentUser?.is_root) {
+  if (!currentUserPut?.is_root) {
     const { data: hasPerm } = await supabase.rpc("user_has_permission", {
       p_user_id: user.id,
       p_permission_slug: "settings.edit",

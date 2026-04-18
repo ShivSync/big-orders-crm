@@ -107,11 +107,10 @@ test.describe("Sprint 8: Landing Page & Chat", () => {
     expect(response.status()).toBe(200);
   });
 
-  test("sidebar should have chat link", async ({ page }) => {
-    await page.goto("/vi/dashboard");
+  test("chat config accessible via settings tab", async ({ page }) => {
+    await page.goto("/vi/settings/chat");
     await page.waitForLoadState("domcontentloaded");
 
-    const chatLink = page.locator('nav a[href*="settings/chat"]');
-    await expect(chatLink).toBeVisible();
+    await expect(page.locator("body")).toContainText(/Chat|FAQ/, { timeout: 10000 });
   });
 });

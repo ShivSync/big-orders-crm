@@ -9,7 +9,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { data: currentUser } = await supabase
+  const serviceClient = await createServiceClient();
+
+  const { data: currentUser } = await serviceClient
     .from("users")
     .select("is_root")
     .eq("id", user.id)
@@ -25,7 +27,6 @@ export async function GET(request: NextRequest) {
   const entityType = params.get("entity_type");
   const action = params.get("action");
 
-  const serviceClient = await createServiceClient();
   let query = serviceClient
     .from("audit_logs")
     .select("id, user_id, action, entity_type, entity_id, old_data, new_data, ip_address, created_at")

@@ -9,7 +9,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { data: currentUser } = await supabase
+  const serviceClient = await createServiceClient();
+
+  const { data: currentUser } = await serviceClient
     .from("users")
     .select("is_root")
     .eq("id", user.id)
@@ -26,7 +28,6 @@ export async function GET(request: NextRequest) {
   const consent = params.get("consent");
   const format = params.get("format");
 
-  const serviceClient = await createServiceClient();
   let query = serviceClient
     .from("individual_customers")
     .select("id, name, phone, email, consent_given, consent_date, created_at")

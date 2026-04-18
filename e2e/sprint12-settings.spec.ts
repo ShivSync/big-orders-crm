@@ -14,7 +14,9 @@ test.describe("Sprint 12: Settings & Polish E2E", () => {
     await page.goto("/vi/settings");
     await page.waitForLoadState("domcontentloaded");
 
-    await expect(page.locator('input')).toHaveCount({ minimum: 2 }, { timeout: 5000 });
+    await expect(page.locator('input').first()).toBeVisible({ timeout: 5000 });
+    const inputCount = await page.locator('input').count();
+    expect(inputCount).toBeGreaterThanOrEqual(2);
     await expect(page.locator("select")).toBeVisible({ timeout: 5000 });
   });
 

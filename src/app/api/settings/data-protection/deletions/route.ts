@@ -9,7 +9,9 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { data: currentUser } = await supabase
+  const serviceClient = await createServiceClient();
+
+  const { data: currentUser } = await serviceClient
     .from("users")
     .select("is_root")
     .eq("id", user.id)
@@ -18,8 +20,6 @@ export async function GET() {
   if (!currentUser?.is_root) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
-
-  const serviceClient = await createServiceClient();
   const { data, error } = await serviceClient
     .from("audit_logs")
     .select("id, entity_id, new_data, created_at")
@@ -52,7 +52,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { data: currentUser } = await supabase
+  const serviceClient = await createServiceClient();
+
+  const { data: currentUser } = await serviceClient
     .from("users")
     .select("is_root")
     .eq("id", user.id)
@@ -66,8 +68,6 @@ export async function POST(request: NextRequest) {
   if (!body?.customer_id || !body?.reason) {
     return NextResponse.json({ error: "customer_id and reason are required" }, { status: 400 });
   }
-
-  const serviceClient = await createServiceClient();
 
   const { data: customer } = await serviceClient
     .from("individual_customers")
