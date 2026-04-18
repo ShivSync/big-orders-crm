@@ -6,9 +6,9 @@ import { cn } from "@/lib/utils";
 import { Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import {
-  LayoutDashboard, Users, UserCog, UsersRound, Settings, Package,
+  LayoutDashboard, Users, UserCog, UsersRound, Settings,
   Target, Building2, ShoppingCart, Megaphone, MapPin, BarChart3, Kanban,
-  MessageCircle, Radio, HelpCircle, Plug,
+  Radio, HelpCircle,
 } from "lucide-react";
 
 const navSections = [
@@ -31,7 +31,6 @@ const navSections = [
       { key: "discovery", href: "/discovery", icon: MapPin },
       { key: "campaigns", href: "/campaigns", icon: Megaphone },
       { key: "channels", href: "/channels", icon: Radio },
-      { key: "chatAdmin", href: "/settings/chat", icon: MessageCircle },
       { key: "reports", href: "/reports", icon: BarChart3 },
     ],
   },
@@ -41,7 +40,6 @@ const navSections = [
       { key: "roles", href: "/roles", icon: UsersRound },
       { key: "teams", href: "/teams", icon: UsersRound },
       { key: "settings", href: "/settings", icon: Settings },
-      { key: "integrations", href: "/settings/integrations", icon: Plug },
       { key: "help", href: "/help", icon: HelpCircle },
     ],
   },

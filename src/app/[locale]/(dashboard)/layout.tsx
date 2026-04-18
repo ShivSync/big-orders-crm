@@ -3,6 +3,7 @@ import { redirect } from "@/i18n/routing";
 import { getLocale } from "next-intl/server";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Topbar } from "@/components/layout/topbar";
+import { ErrorBoundaryWrapper } from "@/components/layout/error-boundary-wrapper";
 
 export default async function DashboardLayout({
   children,
@@ -50,7 +51,9 @@ export default async function DashboardLayout({
           userRole={roleName}
         />
         <main className="flex-1 overflow-y-auto bg-gray-50 p-3 md:p-6">
-          {children}
+          <ErrorBoundaryWrapper>
+            {children}
+          </ErrorBoundaryWrapper>
         </main>
       </div>
     </div>

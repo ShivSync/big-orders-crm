@@ -1,128 +1,214 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Save, Key } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Save, Loader2, Eye, EyeOff } from "lucide-react";
+import { toast } from "sonner";
+import { createClient } from "@/lib/supabase/client";
 
-interface Setting {
-  key: string;
-  value: string;
-  description: string;
-  updated_at: string;
-  configured: boolean;
+interface Profile {
+  name: string;
+  phone: string;
+  language_preference: string;
 }
 
-const KEY_LABELS: Record<string, string> = {
-  google_places_api_key: "googlePlacesKey",
-  apify_api_key: "apifyKey",
-  firecrawl_api_key: "firecrawlKey",
-};
-
-export default function SettingsPage() {
+export default function ProfilePage() {
   const t = useTranslations("settings");
-  const [settings, setSettings] = useState<Setting[]>([]);
-  const [editValues, setEditValues] = useState<Record<string, string>>({});
-  const [saving, setSaving] = useState<Record<string, boolean>>({});
-  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const tc = useTranslations("common");
+  const supabase = createClient();
 
-  const loadSettings = useCallback(async () => {
-    const res = await fetch("/api/settings");
-    if (res.ok) {
-      const json = await res.json();
-      setSettings(json.data || []);
+  const [profile, setProfile] = useState<Profile>({ name: "", phone: "", language_preference: "vi" });
+  const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [changingPassword, setChangingPassword] = useState(false);
+  const [showNewPw, setShowNewPw] = useState(false);
+
+  useEffect(() => {
+    async function load() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { setLoading(false); return; }
+      const { data } = await supabase
+        .from("users")
+        .select("name, phone, language_preference")
+        .eq("id", user.id)
+        .single();
+      if (data) {
+        setProfile({
+          name: data.name || "",
+          phone: data.phone || "",
+          language_preference: data.language_preference || "vi",
+        });
+      }
+      setLoading(false);
     }
-  }, []);
+    load();
+  }, [supabase]);
 
-  useEffect(() => { loadSettings(); }, [loadSettings]);
+  const handleSaveProfile = async () => {
+    setSaving(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { setSaving(false); return; }
 
-  const handleSave = async (key: string) => {
-    const value = editValues[key];
-    if (value === undefined) return;
+    const { error } = await supabase
+      .from("users")
+      .update({
+        name: profile.name.trim(),
+        phone: profile.phone.trim(),
+        language_preference: profile.language_preference,
+      })
+      .eq("id", user.id);
 
-    setSaving(prev => ({ ...prev, [key]: true }));
-    setMessage(null);
-
-    const res = await fetch("/api/settings", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ key, value }),
-    });
-
-    if (res.ok) {
-      setMessage({ type: "success", text: t("saveSuccess") });
-      setEditValues(prev => { const next = { ...prev }; delete next[key]; return next; });
-      loadSettings();
+    if (error) {
+      toast.error(t("saveError"));
     } else {
-      setMessage({ type: "error", text: t("saveError") });
+      toast.success(t("saveSuccess"));
     }
-
-    setSaving(prev => ({ ...prev, [key]: false }));
-    setTimeout(() => setMessage(null), 3000);
+    setSaving(false);
   };
 
-  return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold">{t("title")}</h1>
+  const handleChangePassword = async () => {
+    if (!currentPassword) {
+      toast.error(t("currentPasswordRequired"));
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast.error(t("passwordMismatch"));
+      return;
+    }
+    if (newPassword.length < 8) {
+      toast.error(t("passwordTooShort"));
+      return;
+    }
 
-      {message && (
-        <div className={`p-3 rounded text-sm ${message.type === "success" ? "bg-green-50 text-green-800" : "bg-red-50 text-red-800"}`}>
-          {message.text}
-        </div>
-      )}
+    setChangingPassword(true);
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user?.email) {
+      toast.error(t("passwordError"));
+      setChangingPassword(false);
+      return;
+    }
+
+    const { error: reAuthError } = await supabase.auth.signInWithPassword({
+      email: user.email,
+      password: currentPassword,
+    });
+    if (reAuthError) {
+      toast.error(t("currentPasswordWrong"));
+      setChangingPassword(false);
+      return;
+    }
+
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    if (error) {
+      toast.error(t("passwordError"));
+    } else {
+      toast.success(t("passwordChanged"));
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    }
+    setChangingPassword(false);
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6 max-w-2xl">
+      <Card>
+        <CardHeader>
+          <CardTitle>{t("tabs.profile")}</CardTitle>
+          <CardDescription>{t("profileDescription")}</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label>{t("fullName")}</Label>
+            <Input
+              value={profile.name}
+              onChange={(e) => setProfile((p) => ({ ...p, name: e.target.value }))}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>{t("phone")}</Label>
+            <Input
+              value={profile.phone}
+              onChange={(e) => setProfile((p) => ({ ...p, phone: e.target.value }))}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>{t("languagePreference")}</Label>
+            <select
+              className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm"
+              value={profile.language_preference}
+              onChange={(e) => setProfile((p) => ({ ...p, language_preference: e.target.value }))}
+            >
+              <option value="vi">Tiếng Việt</option>
+              <option value="en">English</option>
+            </select>
+          </div>
+          <Button onClick={handleSaveProfile} disabled={saving}>
+            {saving ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Save className="h-4 w-4 mr-1" />}
+            {tc("save")}
+          </Button>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Key className="h-5 w-5" />
-            {t("apiKeys")}
-          </CardTitle>
-          <CardDescription>{t("apiKeysDescription")}</CardDescription>
+          <CardTitle>{t("changePassword")}</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6">
-          {settings.map(setting => {
-            const labelKey = KEY_LABELS[setting.key];
-            const isEditing = editValues[setting.key] !== undefined;
-
-            return (
-              <div key={setting.key} className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Label>{labelKey ? t(labelKey) : setting.key}</Label>
-                  {setting.configured && !isEditing && (
-                    <Badge className="bg-green-100 text-green-800 text-xs">✓ Configured</Badge>
-                  )}
-                </div>
-                <div className="flex gap-2">
-                  <div className="relative flex-1">
-                    <Input
-                      type="password"
-                      value={isEditing ? editValues[setting.key] : ""}
-                      onChange={e => setEditValues(prev => ({ ...prev, [setting.key]: e.target.value }))}
-                      placeholder={setting.configured ? t("masked") : setting.description}
-                    />
-                  </div>
-                  {isEditing && (
-                    <Button
-                      onClick={() => handleSave(setting.key)}
-                      disabled={saving[setting.key]}
-                    >
-                      <Save className="h-4 w-4 mr-1" />
-                      {saving[setting.key] ? "..." : t("saveSuccess").split(" ")[0]}
-                    </Button>
-                  )}
-                </div>
-                {setting.updated_at && (
-                  <p className="text-xs text-muted-foreground">
-                    {new Date(setting.updated_at).toLocaleString()}
-                  </p>
-                )}
-              </div>
-            );
-          })}
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label>{t("currentPassword")}</Label>
+            <Input
+              type="password"
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>{t("newPassword")}</Label>
+            <div className="relative">
+              <Input
+                type={showNewPw ? "text" : "password"}
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                onClick={() => setShowNewPw(!showNewPw)}
+              >
+                {showNewPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Label>{t("confirmPassword")}</Label>
+            <Input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+          </div>
+          <Button onClick={handleChangePassword} disabled={changingPassword || !currentPassword || !newPassword || !confirmPassword}>
+            {changingPassword ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : null}
+            {t("changePassword")}
+          </Button>
         </CardContent>
       </Card>
     </div>

@@ -13,9 +13,14 @@ test.describe("Smoke tests: all sprint pages load", () => {
     { name: "Roles", path: "/vi/roles" },
     { name: "Teams", path: "/vi/teams" },
     { name: "Discovery", path: "/vi/discovery" },
-    { name: "Settings", path: "/vi/settings" },
-    { name: "Chat Admin", path: "/vi/settings/chat" },
-    { name: "Landing CMS", path: "/vi/settings/landing-page" },
+    { name: "Settings (Profile)", path: "/vi/settings" },
+    { name: "Settings (Business Rules)", path: "/vi/settings/business-rules" },
+    { name: "Settings (API Keys)", path: "/vi/settings/api-keys" },
+    { name: "Settings (System)", path: "/vi/settings/system" },
+    { name: "Settings (Data Protection)", path: "/vi/settings/data-protection" },
+    { name: "Settings (Integrations)", path: "/vi/settings/integrations" },
+    { name: "Settings (Chat Config)", path: "/vi/settings/chat" },
+    { name: "Settings (Landing CMS)", path: "/vi/settings/landing-page" },
   ];
 
   for (const p of pages) {

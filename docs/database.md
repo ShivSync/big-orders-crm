@@ -4,7 +4,7 @@
 
 PostgreSQL via Supabase self-hosted on EC2. All tables have RLS enabled, soft delete via `deleted_at`, and `updated_at` triggers.
 
-## Tables (33 total as of Sprint 11)
+## Tables (33 total as of Sprint 12)
 
 ### Sprint 1: Foundation (13 tables)
 
@@ -210,6 +210,19 @@ PostgreSQL via Supabase self-hosted on EC2. All tables have RLS enabled, soft de
 |------|-------------|
 | `reports.view` | View reports, analytics dashboards, and KPI targets |
 | `reports.export` | Export CRM data as CSV and manage KPI targets |
+
+### Sprint 12: Settings & Final Polish (no new tables)
+
+Sprint 12 uses existing tables — no new migrations required. Features built on:
+
+| Table | Usage in Sprint 12 |
+|-------|-------------------|
+| `business_rules` | Business rules admin UI (read/write `approval_threshold`, `discount_limit`) |
+| `audit_logs` | Audit log viewer with filters and pagination |
+| `individual_customers` | Consent report generation, customer deletion requests |
+| `system_settings` | Settings hub configuration storage |
+
+No schema changes, no new columns, no new indexes.
 
 ## RLS Pattern
 

@@ -477,6 +477,163 @@ Export CRM data as CSV file download.
 
 ---
 
+### GET /api/settings/business-rules
+Fetch all business rules (key-value pairs).
+
+**Permissions:** Authenticated (any user)
+
+**Response:**
+```json
+{
+  "rules": [
+    { "key": "approval_threshold", "value": "50000000", "description": "Order value requiring approval (VND)" },
+    { "key": "discount_limit", "value": "15", "description": "Discount % requiring approval" }
+  ]
+}
+```
+
+---
+
+### PUT /api/settings/business-rules
+Update a business rule value.
+
+**Permissions:** `is_root` or admin role
+
+**Body:**
+```json
+{
+  "key": "approval_threshold",
+  "value": "75000000"
+}
+```
+
+**Validation:**
+- Key must exist in `business_rules` table
+- Value must be a valid numeric string
+
+**Response:** `{ "success": true }`
+
+---
+
+### GET /api/settings/audit-logs
+Fetch paginated audit log entries with optional filters.
+
+**Permissions:** `is_root` or admin role
+
+**Query params:**
+- `page` (number, optional, default 1) — page number
+- `limit` (number, optional, default 50) — entries per page
+- `action` (string, optional) — filter by action type
+- `user_id` (uuid, optional) — filter by acting user
+- `from` (date, optional) — start date (ISO 8601)
+- `to` (date, optional) — end date (ISO 8601)
+
+**Response:**
+```json
+{
+  "logs": [
+    {
+      "id": "uuid",
+      "action": "export_csv",
+      "entity_type": "customers",
+      "entity_id": "uuid",
+      "user_id": "uuid",
+      "user_name": "Admin User",
+      "metadata": {},
+      "created_at": "2026-04-18T12:00:00Z"
+    }
+  ],
+  "total": 1250,
+  "page": 1,
+  "limit": 50
+}
+```
+
+---
+
+### GET /api/settings/data-protection/consent
+Generate a consent report for all customers. Supports CSV export.
+
+**Permissions:** `is_root` or admin role
+
+**Query params:**
+- `format` (string, optional) — `json` (default) or `csv`
+
+**Behavior:**
+- Aggregates customer consent data from `individual_customers`
+- When `format=csv`, returns `Content-Type: text/csv` with `Content-Disposition: attachment` header
+- Logs export action to `audit_logs` (Decree 13 compliance)
+
+**Response (JSON):**
+```json
+{
+  "customers": [
+    {
+      "id": "uuid",
+      "name": "Nguyen Van A",
+      "phone_masked": "***4567",
+      "email_masked": "n***@example.com",
+      "consent_status": "granted",
+      "created_at": "2026-01-15T00:00:00Z"
+    }
+  ],
+  "total": 350
+}
+```
+
+**Response (CSV):** CSV file download with masked PII columns
+
+---
+
+### GET /api/settings/data-protection/deletions
+List customer deletion requests.
+
+**Permissions:** `is_root` or admin role
+
+**Response:**
+```json
+{
+  "requests": [
+    {
+      "id": "uuid",
+      "customer_id": "uuid",
+      "customer_name": "Nguyen Van A",
+      "status": "pending",
+      "requested_at": "2026-04-18T10:00:00Z",
+      "completed_at": null
+    }
+  ]
+}
+```
+
+---
+
+### POST /api/settings/data-protection/deletions
+Submit a customer deletion request (Decree 13 compliance).
+
+**Permissions:** `is_root` or admin role
+
+**Body:**
+```json
+{
+  "customer_id": "uuid",
+  "reason": "Customer requested data removal"
+}
+```
+
+**Validation:**
+- Customer must exist in `individual_customers`
+- No duplicate pending request for the same customer (409 if exists)
+
+**Behavior:**
+- Creates a deletion request record
+- Triggers soft delete workflow (marks `deleted_at` on customer and related records)
+- Logs action to `audit_logs`
+
+**Response:** `{ "success": true, "request_id": "uuid" }`
+
+---
+
 ## Error Responses
 
 All errors follow this format:

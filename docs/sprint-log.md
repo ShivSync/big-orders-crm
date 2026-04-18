@@ -235,8 +235,25 @@ Each sprint includes: DB migration, UI pages, API routes, i18n keys, tests, and 
 
 ---
 
-## Upcoming Sprints
+## Sprint 12: Settings & Final Polish
 
-| Sprint | Name | Key Deliverables |
-|--------|------|-----------------|
-| 12 | Settings & Polish | Admin settings, UX polish, final QA |
+**Status:** DONE | **Date:** 2026-04-18
+
+**Built:**
+- Settings hub with 8-tab layout: Profile, Business Rules, API Keys, System, Data Protection, Integrations, Landing Page, Chat Config
+- Profile management: name, phone, language preference, password change
+- Business rules admin: `approval_threshold`, `discount_limit` — admin-only edit with validation
+- Audit log viewer with filters (action type, user, date range) and pagination
+- Data protection workflows (Decree 13 compliance):
+  - Consent report with CSV export
+  - Customer deletion request submission and tracking
+- Cross-sprint UX polish: skeleton loading states, error boundary components, `loading.tsx` for all route groups
+- Security hardening: PII masking (`mask_phone()` / `mask_email()`) on customer and organization detail pages
+- Sidebar consolidation: removed separate Integrations and Chat Admin nav items, unified under Settings hub
+- 40 new tests (306 total), build clean
+
+---
+
+## All Sprints Complete
+
+All 12 sprints delivered. CRM covers the full Big Order lifecycle: leads, customers, organizations, pipeline, orders, campaigns, discovery, landing page, chat, channel integrations, OMS integration, reports, and settings.

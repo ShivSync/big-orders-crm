@@ -180,7 +180,7 @@ describe("Sprint 11: Reports & Dashboard", () => {
     );
 
     it("should use responsive grid instead of horizontal scroll", () => {
-      expect(pipeline).toContain("grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6");
+      expect(pipeline).toContain("grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6");
       expect(pipeline).not.toContain("overflow-x-auto");
     });
   });

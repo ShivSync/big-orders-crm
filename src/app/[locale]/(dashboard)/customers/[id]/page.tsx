@@ -21,6 +21,7 @@ import {
   PhoneCall, Video, StickyNote, Send, Settings2,
 } from "lucide-react";
 import { ChannelMessagesPanel } from "@/components/channels/channel-messages-panel";
+import { maskPhone, maskEmail } from "@/lib/pii-mask";
 import type {
   IndividualCustomer, ContactType, Store, User, Activity, ActivityType,
   Organization, CustomerOrgLink, Gender, RecurringEvent, RecurringEventType,
@@ -377,12 +378,12 @@ export default function CustomerDetailPage() {
                   <div className="flex items-center gap-2">
                     <Phone className="h-4 w-4 text-gray-400" />
                     <span className="text-sm text-gray-500">{t("phone")}:</span>
-                    <span className="text-sm font-medium">{customer.phone || "—"}</span>
+                    <span className="text-sm font-medium">{customer.phone ? maskPhone(customer.phone) : "—"}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Mail className="h-4 w-4 text-gray-400" />
                     <span className="text-sm text-gray-500">{t("email")}:</span>
-                    <span className="text-sm font-medium">{customer.email || "—"}</span>
+                    <span className="text-sm font-medium">{customer.email ? maskEmail(customer.email) : "—"}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Building2 className="h-4 w-4 text-gray-400" />

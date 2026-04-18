@@ -20,6 +20,7 @@ import {
   DollarSign, ShoppingCart, Calendar,
   PhoneCall, Video, StickyNote, Send, Settings2,
 } from "lucide-react";
+import { maskPhone } from "@/lib/pii-mask";
 import type {
   Organization, OrganizationType, OrgSize, Store, User, Activity, ActivityType,
   IndividualCustomer, CustomerOrgLink,
@@ -467,7 +468,7 @@ export default function OrganizationDetailPage() {
                         <div>
                           <p className="text-sm font-medium">{link.individual?.full_name}</p>
                           <div className="flex items-center gap-2 mt-0.5">
-                            {link.individual?.phone && <span className="text-xs text-gray-500">{link.individual.phone}</span>}
+                            {link.individual?.phone && <span className="text-xs text-gray-500">{maskPhone(link.individual.phone)}</span>}
                             {link.role_title && <span className="text-xs text-gray-500">• {link.role_title}</span>}
                             {link.is_primary_contact && <Badge variant="secondary" className="text-xs">{tCustomers("primaryContact")}</Badge>}
                           </div>
