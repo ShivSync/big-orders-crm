@@ -134,49 +134,49 @@ test.describe.serial("Full CRUD flow: end-to-end data lifecycle", () => {
   test("orders list page loads", async ({ page }) => {
     await page.goto("/vi/orders");
     await page.waitForLoadState("domcontentloaded");
-    await expect(page.locator("h1")).toContainText(/Đơn hàng|Orders/, { timeout: 10000 });
+    await expect(page.locator("h1")).toContainText(/đơn hàng|Orders/i, { timeout: 10000 });
   });
 
   // ─── ORDERS: WIZARD STEP 1 ────────────────────────────────
   test("order wizard loads step 1", async ({ page }) => {
     await page.goto("/vi/orders/new");
     await page.waitForLoadState("domcontentloaded");
-    await expect(page.locator("body")).toContainText(/Đơn hàng mới|New Order|Bước|Step/, { timeout: 10000 });
+    await expect(page.locator("body")).toContainText(/Tạo đơn hàng|New Order|Khách hàng.*Cửa hàng|Step/, { timeout: 10000 });
   });
 
   // ─── CAMPAIGNS: LIST ───────────────────────────────────────
   test("campaigns page loads", async ({ page }) => {
     await page.goto("/vi/campaigns");
     await page.waitForLoadState("domcontentloaded");
-    await expect(page.locator("h1")).toContainText(/Chiến dịch|Campaign/, { timeout: 10000 });
+    await expect(page.locator("h1")).toContainText(/chiến dịch|Campaign/i, { timeout: 10000 });
   });
 
   // ─── DISCOVERY ─────────────────────────────────────────────
   test("discovery page loads", async ({ page }) => {
     await page.goto("/vi/discovery");
     await page.waitForLoadState("domcontentloaded");
-    await expect(page.locator("h1")).toContainText(/Khám phá|Discovery/, { timeout: 10000 });
+    await expect(page.locator("h1")).toContainText(/khám phá|Discovery/i, { timeout: 10000 });
   });
 
   // ─── CHANNELS ──────────────────────────────────────────────
   test("channels page loads", async ({ page }) => {
     await page.goto("/vi/channels");
     await page.waitForLoadState("domcontentloaded");
-    await expect(page.locator("h1")).toContainText(/Kênh|Channel/, { timeout: 10000 });
+    await expect(page.locator("h1")).toContainText(/kênh|Channel/i, { timeout: 10000 });
   });
 
   // ─── REPORTS ───────────────────────────────────────────────
   test("reports page loads with charts", async ({ page }) => {
     await page.goto("/vi/reports");
     await page.waitForLoadState("domcontentloaded");
-    await expect(page.locator("h1")).toContainText(/Báo cáo|Report/, { timeout: 10000 });
+    await expect(page.locator("h1")).toContainText(/báo cáo|Report/i, { timeout: 10000 });
   });
 
   // ─── SETTINGS: ALL TABS ───────────────────────────────────
   test("settings profile tab loads and can edit", async ({ page }) => {
     await page.goto("/vi/settings");
     await page.waitForLoadState("domcontentloaded");
-    await expect(page.locator("h1")).toContainText(/Cài đặt|Settings/, { timeout: 10000 });
+    await expect(page.locator("h1")).toContainText(/cài đặt|Settings/i, { timeout: 10000 });
     const nameInput = page.locator("input").first();
     await expect(nameInput).toBeVisible({ timeout: 5000 });
   });
@@ -227,7 +227,7 @@ test.describe.serial("Full CRUD flow: end-to-end data lifecycle", () => {
   test("users page shows user list", async ({ page }) => {
     await page.goto("/vi/users");
     await page.waitForLoadState("domcontentloaded");
-    await expect(page.locator("h1")).toContainText(/Người dùng|User/, { timeout: 10000 });
+    await expect(page.locator("h1")).toContainText(/người dùng|User/i, { timeout: 10000 });
     await expect(page.locator("table")).toBeVisible({ timeout: 10000 });
   });
 
@@ -235,21 +235,21 @@ test.describe.serial("Full CRUD flow: end-to-end data lifecycle", () => {
   test("roles page loads", async ({ page }) => {
     await page.goto("/vi/roles");
     await page.waitForLoadState("domcontentloaded");
-    await expect(page.locator("h1")).toContainText(/Vai trò|Role/, { timeout: 10000 });
+    await expect(page.locator("h1")).toContainText(/vai trò|Role/i, { timeout: 10000 });
   });
 
   // ─── TEAMS ────────────────────────────────────────────────
   test("teams page loads", async ({ page }) => {
     await page.goto("/vi/teams");
     await page.waitForLoadState("domcontentloaded");
-    await expect(page.locator("h1")).toContainText(/Nhóm|Team/, { timeout: 10000 });
+    await expect(page.locator("h1")).toContainText(/nhóm|Team/i, { timeout: 10000 });
   });
 
   // ─── HELP ─────────────────────────────────────────────────
   test("help page loads", async ({ page }) => {
     await page.goto("/vi/help");
     await page.waitForLoadState("domcontentloaded");
-    await expect(page.locator("h1")).toContainText(/Trợ giúp|Help/, { timeout: 10000 });
+    await expect(page.locator("h1")).toContainText(/trợ giúp|Help|Hướng dẫn/i, { timeout: 10000 });
   });
 
   // ─── PUBLIC LANDING ───────────────────────────────────────

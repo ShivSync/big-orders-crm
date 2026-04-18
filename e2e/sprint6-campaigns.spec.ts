@@ -86,7 +86,7 @@ test.describe("Sprint 6: Campaigns & Recurring Events", () => {
     await firstRow.click();
     await page.waitForLoadState("domcontentloaded");
 
-    await expect(page.locator("text=Sự kiện định kỳ")).toBeVisible({ timeout: 10000 });
+    await expect(page.locator("text=Sự kiện định kỳ").first()).toBeVisible({ timeout: 10000 });
   });
 
   test("campaigns stats cards should render", async ({ page }) => {

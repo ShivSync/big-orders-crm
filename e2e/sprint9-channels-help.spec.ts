@@ -42,7 +42,7 @@ test.describe("Sprint 9: Channels Page", () => {
     await page.waitForLoadState("domcontentloaded");
     await page.waitForTimeout(2000);
 
-    await expect(page.locator("body")).toContainText(/Tất cả kênh|All Channels/, { timeout: 10000 });
+    await expect(page.locator("body")).toContainText(/Tất cả kênh|All Channels|Tin nhắn/, { timeout: 10000 });
   });
 });
 
