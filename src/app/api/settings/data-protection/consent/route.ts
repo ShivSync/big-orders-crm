@@ -30,14 +30,14 @@ export async function GET(request: NextRequest) {
 
   let query = serviceClient
     .from("individual_customers")
-    .select("id, name, phone, email, consent_given, consent_date, created_at")
+    .select("id, full_name, phone, email, consent_given, consent_date, created_at")
     .is("deleted_at", null)
     .order("created_at", { ascending: false });
 
   if (search) {
     const sanitized = search.replace(/[%_,().*+?^${}|[\]\\]/g, "");
     if (sanitized) {
-      query = query.or(`name.ilike.%${sanitized}%,phone.ilike.%${sanitized}%`);
+      query = query.or(`full_name.ilike.%${sanitized}%,phone.ilike.%${sanitized}%`);
     }
   }
   if (consent === "yes") {
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
     }
 
     const rows = (data || []).map((c) => ({
-      name: c.name,
+      name: c.full_name,
       phone: c.phone,
       email: c.email || "",
       consent_given: c.consent_given ? "Yes" : "No",

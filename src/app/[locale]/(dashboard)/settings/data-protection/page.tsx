@@ -14,7 +14,7 @@ import { toast } from "sonner";
 
 interface CustomerConsent {
   id: string;
-  name: string;
+  full_name: string;
   phone: string;
   email: string | null;
   consent_given: boolean;
@@ -189,7 +189,7 @@ export default function DataProtectionPage() {
                 <tbody>
                   {customers.map((c) => (
                     <tr key={c.id} className="border-b">
-                      <td className="py-2 pr-4">{c.name}</td>
+                      <td className="py-2 pr-4">{c.full_name}</td>
                       <td className="py-2 pr-4 font-mono text-xs">{c.phone}</td>
                       <td className="py-2 pr-4">
                         <Badge className={c.consent_given ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}>
